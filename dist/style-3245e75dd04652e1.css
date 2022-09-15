@@ -1,0 +1,44 @@
+body {
+  background: black;
+  color: white;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: lighter;
+}
+
+.frameContainer {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  /* height: 80%; */
+  width: 80%;
+  vertical-align: middle;
+  /* margin: 10%; */
+  /* margin-top: 5%; */
+}
+
+.frameBorder {
+  display: flex;
+  /* flex-grow: 1; */
+  border: 0.1vw solid white;
+  aspect-ratio: 1.48 / 1;
+}
+
+h1 {
+  font-size: 400%;
+}
+
+h2 {
+  font-size: 100%;
+}
+
+.text {
+  font-weight: unset;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
