@@ -1,3 +1,20 @@
-WHAT,HOW
+WHAT;HOW
 WHAT
-TEST,NOW TEST
+TEST;NOW TEST
+abc;cde
+abc;cde
+abc;cde
+abc;cde
+abc;cde
+abccde;cde
+abccde;cde
+abccde;cde
+abccde;cde
+abccde;cde
+abccde;cde
+abccde;cde
+abccde\n;cde
+abc;cde
+abc;cde
+abc\r;cde
+<script>alert(1337)</script>;cde

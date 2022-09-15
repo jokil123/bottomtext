@@ -1,23 +1,21 @@
-mod db_error;
+pub mod db_error;
+pub mod types;
+
 use db_error::DbError;
-use rocket::http::private::cookie::ParseError;
+use types::{FrameJson, FramesJson};
 
-use std::{error::Error, fs};
+use std::{fs, io::Write};
 
-pub struct FramesJson {
-    pub frames: Vec<FrameJson>,
-}
+pub const DB_PATH: &str = "db";
+pub const FRAME_DELIMITER: &str = "\n";
+pub const SUBTEXT_DELIMITER: &str = ";";
+pub const ILLEGAL_CHARACTERS: &'static [&'static str] = &["\n", "\r", "\0"];
 
-pub struct FrameJson {
-    pub text: String,
-    pub subtext: Option<String>,
-}
-
-pub fn get_frames() -> Result<FramesJson, DbError> {
-    let contents = fs::read_to_string("db").map_err(|e| DbError::IoError(e))?;
+pub fn read_frames() -> Result<FramesJson, DbError> {
+    let contents = fs::read_to_string(DB_PATH).map_err(|e| DbError::IoError(e))?;
 
     let lines = contents
-        .split("\n")
+        .split(FRAME_DELIMITER)
         .map(|l| l.to_string())
         .collect::<Vec<String>>();
 
@@ -25,7 +23,7 @@ pub fn get_frames() -> Result<FramesJson, DbError> {
         .iter()
         .map(|frame| {
             let splits = frame
-                .split(",")
+                .split(SUBTEXT_DELIMITER)
                 .map(str::to_string)
                 .collect::<Vec<String>>();
 
@@ -40,4 +38,34 @@ pub fn get_frames() -> Result<FramesJson, DbError> {
         .collect::<Result<Vec<FrameJson>, DbError>>()?;
 
     Ok(FramesJson { frames })
+}
+
+pub fn write_frame(frame: FrameJson) -> Result<(), DbError> {
+    let mut file = fs::OpenOptions::new()
+        .append(true)
+        .open(DB_PATH)
+        .map_err(|e| DbError::IoError(e))?;
+
+    let text = format!(
+        "{}{}{}{}",
+        sanitize_input(frame.text),
+        SUBTEXT_DELIMITER,
+        sanitize_input(frame.subtext.unwrap_or_default()),
+        FRAME_DELIMITER
+    );
+
+    file.write_all(text.as_bytes())
+        .map_err(|e| DbError::IoError(e))?;
+
+    Ok(())
+}
+
+pub fn sanitize_input(input: String) -> String {
+    let input = input
+        .replace(FRAME_DELIMITER, "")
+        .replace(SUBTEXT_DELIMITER, "");
+
+    ILLEGAL_CHARACTERS
+        .iter()
+        .fold(input, |acc, c| acc.replace(c, ""))
 }
