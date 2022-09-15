@@ -40,7 +40,7 @@ pub fn read_frames() -> Result<FramesJson, DbError> {
     Ok(FramesJson { frames })
 }
 
-pub fn write_frame(frame: FrameJson) -> Result<(), DbError> {
+pub fn insert_frame(frame: FrameJson) -> Result<(), DbError> {
     let mut file = fs::OpenOptions::new()
         .append(true)
         .open(DB_PATH)

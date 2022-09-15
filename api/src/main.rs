@@ -1,5 +1,6 @@
 // #![deny(warnings)]
 use std::collections::HashMap;
+use std::io::ErrorKind;
 use std::net::IpAddr;
 use std::sync::{
     atomic::{AtomicUsize, Ordering},
@@ -49,10 +50,12 @@ async fn main() {
             ws.on_upgrade(move |socket| user_connected(socket, users))
         });
 
-    // GET / -> index html
-    let index = warp::path::end().map(|| warp::reply::html(INDEX_HTML));
+    let api = warp::path("api")
+        .and(warp::path("frames"))
+        .and(warp::get())
+        .map(|| warp::reply::json(&db::read_frames().unwrap()));
 
-    let routes = index.or(chat);
+    let routes = api.or(chat);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
@@ -125,7 +128,7 @@ async fn write_frame_db(msg: Message) {
         }
     };
 
-    match db::write_frame(frame) {
+    match db::insert_frame(frame) {
         Ok(_) => (),
         Err(e) => eprintln!("Error writing frame to db: {}", e),
     };
@@ -159,45 +162,3 @@ async fn user_disconnected(my_id: usize, users: &Users) {
     // Stream closed up, so remove from the user list
     users.write().await.remove(&my_id);
 }
-
-static INDEX_HTML: &str = r#"<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Warp Chat</title>
-    </head>
-    <body>
-        <h1>Warp chat</h1>
-        <div id="chat">
-            <p><em>Connecting...</em></p>
-        </div>
-        <input type="text" id="text" />
-        <button type="button" id="send">Send</button>
-        <script type="text/javascript">
-        const chat = document.getElementById('chat');
-        const text = document.getElementById('text');
-        const uri = 'ws://' + location.host + '/chat';
-        const ws = new WebSocket(uri);
-        function message(data) {
-            const line = document.createElement('p');
-            line.innerText = data;
-            chat.appendChild(line);
-        }
-        ws.onopen = function() {
-            chat.innerHTML = '<p><em>Connected!</em></p>';
-        };
-        ws.onmessage = function(msg) {
-            message(msg.data);
-        };
-        ws.onclose = function() {
-            chat.getElementsByTagName('em')[0].innerText = 'Disconnected!';
-        };
-        send.onclick = function() {
-            const msg = text.value;
-            ws.send(msg);
-            text.value = '';
-            message('<You>: ' + msg);
-        };
-        </script>
-    </body>
-</html>
-"#;
