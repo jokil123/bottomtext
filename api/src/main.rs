@@ -90,7 +90,6 @@ async fn main() {
     let conn_manager = warp::any().map(move || conn_manager.clone());
 
     let ws = warp::path("ws")
-        // The `ws()` filter will prepare Websocket handshake...
         .and(warp::ws())
         .and(conn_manager)
         .and(users)
@@ -106,12 +105,17 @@ async fn main() {
             },
         );
 
-    let api = warp::path("api")
-        .and(warp::path("frames"))
+    let index = warp::path::end().and(warp::fs::file("static/index.html"));
+
+    let static_dir = warp::path("static").and(warp::fs::dir("static"));
+
+    let frames = warp::path("frames")
         .and(warp::get())
         .map(|| warp::reply::json(&db::read_frames().unwrap()));
 
-    let routes = api.or(ws);
+    let routes = index
+        .or(warp::path("api").and(frames.or(ws)))
+        .or(static_dir);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
