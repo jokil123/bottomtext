@@ -1,6 +1,13 @@
+use gloo_net::http::Request;
+use serde::Deserialize;
 use yew::prelude::*;
 
-#[derive(Debug, Clone, PartialEq, Properties)]
+#[derive(Debug, Deserialize)]
+struct FrameJson {
+    text: String,
+    subtext: Option<String>,
+}
+#[derive(Debug, Clone, PartialEq, Properties, Default)]
 struct FrameModel {
     text: String,
     subtext: Option<String>,
@@ -28,28 +35,50 @@ impl FrameModel {
             None => None,
         }
     }
+
+    pub fn from_json(json: Vec<FrameJson>) -> FrameModel {
+        let mut depth: i32 = json.len() as i32;
+
+        json.iter().fold(FrameModel::default(), |fm, fj| {
+            depth -= 1;
+            FrameModel {
+                text: fj.text.clone(),
+                subtext: fj.subtext.clone(),
+                depth: depth,
+                inner: Some(Box::new(fm)),
+            }
+        })
+    }
 }
 
 #[function_component(App)]
 fn app() -> Html {
-    // let frame = FrameModel {
-    //     text: "WHAT".to_string(),
-    //     subtext: Some("HOW".to_string()),
-    //     inner: Some(Box::new(FrameModel {
-    //         text: "WHAT".to_string(),
-    //         subtext: Some("HOW".to_string()),
-    //         inner: None,
-    //     })),
-    // };
+    let frame: UseStateHandle<FrameModel> = use_state(|| FrameModel::default());
 
-    let frame = FrameModel::new(
-        vec![("WHAT", Some("HOW")), ("WHAT", Some("HOW")), ("WHAT", None)],
-        None,
-    )
-    .unwrap();
+    {
+        let frame = frame.clone();
+        use_effect_with_deps(
+            move |_| {
+                let frame = frame.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    let fetched_frames: Vec<FrameJson> =
+                        Request::get("http://localhost:3030/api/frames")
+                            .send()
+                            .await
+                            .unwrap()
+                            .json()
+                            .await
+                            .unwrap();
+                    frame.set(FrameModel::from_json(fetched_frames));
+                });
+                || ()
+            },
+            (),
+        );
+    }
 
     html! {
-        <Frame frame={frame} />
+        <Frame frame={(*frame).clone()} />
     }
 }
 
@@ -113,6 +142,5 @@ struct FrameProps {
 // }
 
 fn main() {
-    // yew::start_app::<App>();
     yew::start_app::<App>();
 }
