@@ -1,11 +1,11 @@
 // #![deny(warnings)]
 use std::collections::HashMap;
-use std::io::ErrorKind;
-use std::net::IpAddr;
+use std::net::{IpAddr, SocketAddr};
 use std::sync::{
     atomic::{AtomicUsize, Ordering},
     Arc,
 };
+use std::time::Instant;
 
 use db::types::FrameJson;
 use futures_util::{SinkExt, StreamExt, TryFutureExt};
@@ -21,51 +21,107 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
-/// Our global unique user id counter.
-static NEXT_USER_ID: AtomicUsize = AtomicUsize::new(1);
+struct Connection {
+    tx: mpsc::UnboundedSender<Message>,
+    user: Arc<User>,
+}
 
-/// Our state of currently connected users.
-///
-/// - Key is their id
-/// - Value is a sender of `warp::ws::Message`
-type Users = Arc<RwLock<HashMap<usize, mpsc::UnboundedSender<Message>>>>;
+// #[derive(Default)]
+type Users = Arc<RwLock<HashMap<IpAddr, Arc<User>>>>;
+
+struct User {
+    ip: IpAddr,
+    cooldown_until: Option<Instant>,
+}
+
+struct ConnectionManager {
+    next_conn_id: AtomicUsize,
+    active_connections: Arc<RwLock<HashMap<usize, Connection>>>,
+}
+
+impl ConnectionManager {
+    fn new() -> Self {
+        Self {
+            next_conn_id: AtomicUsize::new(1),
+            active_connections: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+
+    async fn open(&self, users: Users, tx: mpsc::UnboundedSender<Message>, ip: IpAddr) -> usize {
+        let mut users_lock = users.write().await;
+
+        let user = match users_lock.get(&ip) {
+            Some(user) => user,
+            None => {
+                let user = User {
+                    ip,
+                    cooldown_until: None,
+                };
+                users_lock.insert(ip, Arc::new(user));
+                users_lock.get(&ip).unwrap()
+            }
+        };
+
+        let conn_id = self.next_conn_id.fetch_add(1, Ordering::Relaxed);
+
+        self.active_connections.write().await.insert(
+            conn_id,
+            Connection {
+                tx,
+                user: user.clone(),
+            },
+        );
+
+        return conn_id;
+    }
+
+    async fn close(&self, conn_id: usize) {
+        self.active_connections.write().await.remove(&conn_id);
+    }
+}
 
 #[tokio::main]
 async fn main() {
-    // pretty_env_logger::init();
-
-    // Keep track of all connected users, key is usize, value
-    // is a websocket sender.
     let users = Users::default();
-    // Turn our "state" into a new Filter...
     let users = warp::any().map(move || users.clone());
 
-    // GET /chat -> websocket upgrade
-    let chat = warp::path("chat")
+    let conn_manager = Arc::new(ConnectionManager::new());
+    // Turn our "state" into a new Filter...
+    let conn_manager = warp::any().map(move || conn_manager.clone());
+
+    let ws = warp::path("ws")
         // The `ws()` filter will prepare Websocket handshake...
         .and(warp::ws())
+        .and(conn_manager)
         .and(users)
-        .map(|ws: warp::ws::Ws, users| {
-            // This will call our function if the handshake succeeds.
-            ws.on_upgrade(move |socket| user_connected(socket, users))
-        });
+        .and(warp::addr::remote())
+        .map(
+            |ws: warp::ws::Ws,
+             conn_manager: Arc<ConnectionManager>,
+             users,
+             addr: Option<SocketAddr>| {
+                ws.on_upgrade(move |socket| {
+                    user_connected(socket, conn_manager, addr.unwrap(), users)
+                })
+            },
+        );
 
     let api = warp::path("api")
         .and(warp::path("frames"))
         .and(warp::get())
         .map(|| warp::reply::json(&db::read_frames().unwrap()));
 
-    let routes = api.or(chat);
+    let routes = api.or(ws);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
 
-async fn user_connected(ws: WebSocket, users: Users) {
-    // Use a counter to assign a new unique ID for this user.
-    let my_id = NEXT_USER_ID.fetch_add(1, Ordering::Relaxed);
-
-    eprintln!("new chat user: {}", my_id);
-
+async fn user_connected(
+    ws: WebSocket,
+    connections: Arc<ConnectionManager>,
+    addr: SocketAddr,
+    users: Users,
+) {
     // Split the socket into a sender and receive of messages.
     let (mut user_ws_tx, mut user_ws_rx) = ws.split();
 
@@ -86,7 +142,7 @@ async fn user_connected(ws: WebSocket, users: Users) {
     });
 
     // Save the sender in our list of connected users.
-    users.write().await.insert(my_id, tx);
+    let conn_id = connections.open(users, tx, addr.ip()).await;
 
     // Return a `Future` that is basically a state machine managing
     // this specific user's connection.
@@ -97,24 +153,24 @@ async fn user_connected(ws: WebSocket, users: Users) {
         let msg = match result {
             Ok(msg) => msg,
             Err(e) => {
-                eprintln!("websocket error(uid={}): {}", my_id, e);
+                eprintln!("websocket error(uid={}): {}", conn_id, e);
                 break;
             }
         };
-        println!("{}: {:?}", my_id, msg);
-        user_message(my_id, msg.clone(), &users).await;
+        println!("{}: {:?}", conn_id, msg);
+        user_frame(conn_id, msg.clone(), &connections).await;
         write_frame_db(msg).await;
     }
 
     // user_ws_rx stream will keep processing as long as the user stays
     // connected. Once they disconnect, then...
-    user_disconnected(my_id, &users).await;
+    connections.close(conn_id).await;
 }
 
 async fn write_frame_db(msg: Message) {
     let s = match msg.to_str() {
         Ok(s) => s,
-        Err(e) => {
+        Err(_) => {
             eprintln!("Error converting message to string");
             return;
         }
@@ -134,7 +190,7 @@ async fn write_frame_db(msg: Message) {
     };
 }
 
-async fn user_message(my_id: usize, msg: Message, users: &Users) {
+async fn user_frame(conn_id: usize, msg: Message, conn_manager: &ConnectionManager) {
     // Skip any non-Text messages...
     let msg = if let Ok(s) = msg.to_str() {
         s
@@ -142,23 +198,16 @@ async fn user_message(my_id: usize, msg: Message, users: &Users) {
         return;
     };
 
-    let new_msg = format!("<User#{}>: {}", my_id, msg);
+    let new_msg = format!("<User#{}>: {}", conn_id, msg);
 
     // New message from this user, send it to everyone else (except same uid)...
-    for (&uid, tx) in users.read().await.iter() {
-        if my_id != uid {
-            if let Err(_disconnected) = tx.send(Message::text(new_msg.clone())) {
+    for (&other_conn_id, conn) in conn_manager.active_connections.read().await.iter() {
+        if conn_id != other_conn_id {
+            if let Err(_disconnected) = conn.tx.send(Message::text(new_msg.clone())) {
                 // The tx is disconnected, our `user_disconnected` code
                 // should be happening in another task, nothing more to
                 // do here.
             }
         }
     }
-}
-
-async fn user_disconnected(my_id: usize, users: &Users) {
-    eprintln!("good bye user: {}", my_id);
-
-    // Stream closed up, so remove from the user list
-    users.write().await.remove(&my_id);
 }
