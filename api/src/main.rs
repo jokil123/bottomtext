@@ -107,6 +107,8 @@ async fn main() {
 
     let index = warp::path::end().and(warp::fs::file("static/index.html"));
 
+    let dist = warp::path("dist").and(warp::fs::dir("../../ui/dist"));
+
     let static_dir = warp::path("static").and(warp::fs::dir("static"));
 
     let frames = warp::path("frames")
@@ -115,6 +117,7 @@ async fn main() {
 
     let routes = index
         .or(warp::path("api").and(frames.or(ws)))
+        .or(dist)
         .or(static_dir);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
