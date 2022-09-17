@@ -105,9 +105,9 @@ async fn main() {
             },
         );
 
-    let index = warp::path::end().and(warp::fs::file("static/index.html"));
+    let index = warp::path::end().and(warp::fs::file("../ui/dist/index.html"));
 
-    let dist = warp::path("dist").and(warp::fs::dir("../../ui/dist"));
+    let dist = warp::path("dist").and(warp::fs::dir("../ui/dist"));
 
     let static_dir = warp::path("static").and(warp::fs::dir("static"));
 

@@ -3,6 +3,11 @@ use serde::Deserialize;
 use yew::prelude::*;
 
 #[derive(Debug, Deserialize)]
+struct FramesJson {
+    frames: Vec<FrameJson>,
+}
+
+#[derive(Debug, Deserialize)]
 struct FrameJson {
     text: String,
     subtext: Option<String>,
@@ -36,10 +41,10 @@ impl FrameModel {
         }
     }
 
-    pub fn from_json(json: Vec<FrameJson>) -> FrameModel {
-        let mut depth: i32 = json.len() as i32;
+    pub fn from_json(frames: FramesJson) -> FrameModel {
+        let mut depth: i32 = frames.frames.len() as i32;
 
-        json.iter().fold(FrameModel::default(), |fm, fj| {
+        frames.frames.iter().fold(FrameModel::default(), |fm, fj| {
             depth -= 1;
             FrameModel {
                 text: fj.text.clone(),
@@ -61,7 +66,7 @@ fn app() -> Html {
             move |_| {
                 let frame = frame.clone();
                 wasm_bindgen_futures::spawn_local(async move {
-                    let fetched_frames: Vec<FrameJson> =
+                    let fetched_frames: FramesJson =
                         Request::get("http://localhost:3030/api/frames")
                             .send()
                             .await
@@ -112,34 +117,6 @@ fn frame(props: &FrameProps) -> Html {
 struct FrameProps {
     frame: FrameModel,
 }
-
-// #[function_component(FrameMock)]
-// fn frame_mock() -> Html {
-//     // html! {
-//     //     <div class="frameMock">
-//     //         <div class="frameMock">
-//     //             <div class="frameMock">
-//     //             </div>
-//     //         </div>
-//     //     </div>
-//     // }
-//     html! {
-//         <div class="frameContainer">
-//             <div class="frameBorder">
-//                 //Inner
-//                     <div class="frameContainer">
-//                         <div class="frameBorder">
-//                         </div>
-//                         <h1>{"WHAT"}</h1>
-//                         <h2>{"HOW"}</h2>
-//                     </div>
-//                 //Inner
-//             </div>
-//             <h1>{"WHAT"}</h1>
-//             <h2>{"HOW"}</h2>
-//         </div>
-//     }
-// }
 
 fn main() {
     yew::start_app::<App>();
