@@ -9,6 +9,7 @@ edition = "2021"
 wasm-bindgen = "0.2.83"
 wasm-bindgen-futures = "0.4.24"
 web-sys = "0.3.60"
+js-sys = "0.3.60"
 
 wasm-logger = "0.2.0"
 log = "0.4.17"
@@ -19,3 +20,5 @@ gloo-net = "0.2.4"
 serde = { version = "1.0.144", features = ["derive"] }
 
 thiserror = "1.0.35"
+
+clone_all = "0.1.1"
