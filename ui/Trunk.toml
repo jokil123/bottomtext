@@ -1,5 +1,5 @@
-[build]
-public_url = "./dist/"
+# [build]
+# public_url = "./dist/"
 
-[server]
-no_autoreload = true
+# [server]
+# no_autoreload = true
