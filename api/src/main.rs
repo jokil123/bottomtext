@@ -14,6 +14,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::ws::{Message, WebSocket};
 use warp::Filter;
 
+mod cache;
 mod db;
 
 extern crate serde;

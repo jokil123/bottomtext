@@ -64,7 +64,7 @@ impl<T, E: Debug> Cache<T, E> {
         }
     }
 
-    async fn invalidate(&mut self) {
+    pub async fn invalidate(&mut self) {
         self.write_cache().await;
         self.read_cache().await;
 
@@ -72,7 +72,7 @@ impl<T, E: Debug> Cache<T, E> {
         self.read_writes = 0;
     }
 
-    fn new(
+    pub fn new(
         init_data: T,
         write: fn(&T) -> Box<dyn Future<Output = Result<(), E>> + Unpin>,
         read: fn() -> Box<dyn Future<Output = Result<T, E>> + Unpin>,
