@@ -7,8 +7,8 @@ use futures_util::{Future, FutureExt};
 
 pub struct Cache<T, E: Debug> {
     cache_data: Arc<T>,
-    write: fn(&T) -> Box<dyn Future<Output = Result<(), E>> + Unpin>,
-    read: fn() -> Box<dyn Future<Output = Result<T, E>> + Unpin>,
+    write: fn(&T) -> Result<(), E>,
+    read: fn() -> Result<T, E>,
     max_read_writes: Option<u32>,
     read_writes: u32,
     max_interval: Option<Duration>,
@@ -34,13 +34,13 @@ impl<T, E: Debug> Cache<T, E> {
     }
 
     async fn write_cache(&self) {
-        if let Err(e) = (self.write)(&*self.cache_data).await {
+        if let Err(e) = (self.write)(&*self.cache_data) {
             eprintln!("Error writing cache: {:#?}", e);
         }
     }
 
     async fn read_cache(&mut self) {
-        match (self.read)().await {
+        match (self.read)() {
             Ok(data) => self.cache_data = Arc::new(data),
             Err(e) => {
                 eprintln!("Error reading cache: {:#?}", e);
@@ -74,8 +74,8 @@ impl<T, E: Debug> Cache<T, E> {
 
     pub fn new(
         init_data: T,
-        write: fn(&T) -> Box<dyn Future<Output = Result<(), E>> + Unpin>,
-        read: fn() -> Box<dyn Future<Output = Result<T, E>> + Unpin>,
+        write: fn(&T) -> Result<(), E>,
+        read: fn() -> Result<T, E>,
         max_read_writes: Option<u32>,
         max_interval: Option<Duration>,
     ) -> Self {

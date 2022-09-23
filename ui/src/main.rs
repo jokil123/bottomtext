@@ -4,6 +4,7 @@ use yew::prelude::*;
 
 mod frame;
 mod frame_input;
+mod ws;
 
 use crate::frame::Frame;
 use crate::frame_input::FrameInput;

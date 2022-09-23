@@ -1,6 +1,9 @@
 use async_trait::async_trait;
 
-use std::{collections::HashMap, fmt::Debug, fs, hash::Hash, io::Write, sync::Arc};
+use std::{
+    collections::HashMap, fmt::Debug, fs, future::Future, hash::Hash, io::Write, pin::Pin,
+    ptr::read, sync::Arc, time::Duration,
+};
 
 use super::{
     db_error::DbError,
@@ -30,7 +33,13 @@ impl FileDbPool {
     fn new() -> Self {
         FileDbPool {
             connections: vec![],
-            cache: Cache::new(FramesJson { frames: vec![] }, read_frames),
+            cache: Cache::new(
+                FramesJson { frames: vec![] },
+                write_frames,
+                read_frames,
+                Some(100),
+                Some(Duration::from_secs(10)),
+            ),
         }
     }
 }
@@ -84,19 +93,11 @@ pub fn read_frames() -> Result<FramesJson, DbError> {
     Ok(FramesJson { frames })
 }
 
-pub fn write(frames: FramesJson) -> Result<(), DbError> {
+pub fn write_frames(frames: FramesJson) -> Result<(), DbError> {
     let mut file = fs::OpenOptions::new()
         .append(false)
         .open(DB_PATH)
         .map_err(|e| DbError::IoError(e))?;
-
-    let text = format!(
-        "{}{}{}{}",
-        sanitize_input(frames.text),
-        SUBTEXT_DELIMITER,
-        sanitize_input(frames.subtext.unwrap_or_default()),
-        FRAME_DELIMITER
-    );
 
     let text = frames
         .frames
@@ -104,13 +105,13 @@ pub fn write(frames: FramesJson) -> Result<(), DbError> {
         .map(|f| {
             format!(
                 "{}{}{}{}",
-                sanitize_input(frames.text),
+                sanitize_input(f.text),
                 SUBTEXT_DELIMITER,
-                sanitize_input(frames.subtext.unwrap_or_default()),
+                sanitize_input(f.subtext.unwrap_or_default()),
                 FRAME_DELIMITER
             )
         })
-        .fold(String::new(), |a, b| a + b);
+        .fold(String::new(), |a, b| a + &b);
 
     file.write_all(text.as_bytes())
         .map_err(|e| DbError::IoError(e))?;

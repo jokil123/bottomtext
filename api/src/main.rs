@@ -7,6 +7,7 @@ use std::sync::{
 };
 use std::time::Instant;
 
+use db::legacy_db::{insert_frame, read_frames};
 use db::types::FrameJson;
 use futures_util::{SinkExt, StreamExt, TryFutureExt};
 use tokio::sync::{mpsc, RwLock};
@@ -14,7 +15,7 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::ws::{Message, WebSocket};
 use warp::Filter;
 
-mod cache;
+// mod cache;
 mod db;
 
 extern crate serde;
@@ -114,7 +115,7 @@ async fn main() {
 
     let frames = warp::path("frames")
         .and(warp::get())
-        .map(|| warp::reply::json(&db::read_frames().unwrap()));
+        .map(|| warp::reply::json(&read_frames().unwrap()));
 
     let routes = index
         .or(warp::path("api").and(frames.or(ws)))
@@ -192,7 +193,7 @@ async fn write_frame_db(msg: Message) {
         }
     };
 
-    match db::insert_frame(frame) {
+    match insert_frame(frame) {
         Ok(_) => (),
         Err(e) => eprintln!("Error writing frame to db: {}", e),
     };
