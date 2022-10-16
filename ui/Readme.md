@@ -6,6 +6,6 @@
 
    `rustup target add wasm32-unknown-unknown`
 
-1. build ui
+1. serve ui
 
-   `trunk build`
+   `trunk serve`

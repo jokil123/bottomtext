@@ -1,4 +1,5 @@
 use frame::FrameModel;
+use wasm_bindgen::prelude::wasm_bindgen;
 use yew::html;
 use yew::prelude::*;
 
