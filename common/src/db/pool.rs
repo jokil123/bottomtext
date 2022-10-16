@@ -1,9 +1,8 @@
 use async_trait::async_trait;
 
-use super::{
-    db_error::DbError,
-    types::{FrameJson, FramesJson},
-};
+use super::db_error::DbError;
+
+use crate::frame::{FrameJson, FramesJson};
 
 #[async_trait]
 pub trait DbPool<T: DbConnection> {

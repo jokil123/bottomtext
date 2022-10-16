@@ -1,21 +1,11 @@
+use common::frame::{FrameJson, FramesJson};
 use gloo_net::http::Request;
 use serde::Deserialize;
 use yew::{function_component, html, Properties};
 
-#[derive(Debug, Deserialize)]
-struct FramesJson {
-    frames: Vec<FrameJson>,
-}
-
-#[derive(Debug, Deserialize)]
-struct FrameJson {
-    text: String,
-    subtext: Option<String>,
-}
 #[derive(Debug, Clone, PartialEq, Properties, Default)]
 pub struct FrameModel {
-    text: String,
-    subtext: Option<String>,
+    frame: FrameJson,
     depth: i32,
     inner: Option<Box<FrameModel>>,
 }
@@ -29,8 +19,10 @@ impl FrameModel {
 
         match frame_data.get(0) {
             Some(d) => Some(FrameModel {
-                text: d.0.to_string(),
-                subtext: d.1.map(str::to_string),
+                frame: FrameJson {
+                    text: d.0.to_string(),
+                    subtext: d.1.map(str::to_string),
+                },
                 depth: depth,
                 inner: match FrameModel::new(frame_data[1..].to_owned(), Some(depth + 1)) {
                     Some(f) => Some(Box::new(f)),
@@ -47,8 +39,10 @@ impl FrameModel {
         frames.frames.iter().fold(FrameModel::default(), |fm, fj| {
             depth -= 1;
             FrameModel {
-                text: fj.text.clone(),
-                subtext: fj.subtext.clone(),
+                frame: FrameJson {
+                    text: fj.text.clone(),
+                    subtext: fj.subtext.clone(),
+                },
                 depth: depth,
                 inner: Some(Box::new(fm)),
             }
@@ -70,20 +64,20 @@ impl FrameModel {
 #[function_component(Frame)]
 pub fn frame(props: &FrameProps) -> Html {
     html!(
-        <div class="frameContainer" depth={props.frame.depth.to_string()}>
+        <div class="frameContainer" depth={props.fm.depth.to_string()}>
             <div class="frameBorder">
-                {match &props.frame.inner {
+                {match &props.fm.inner {
                     Some(inner) => html! {
-                        <Frame frame={inner.as_ref().clone()} />
+                        <Frame fm={inner.as_ref().clone()} />
                     },
                     None => html! {},
                 }}
             </div>
 
 
-            <h1 class="text">{&props.frame.text}</h1>
+            <h1 class="text">{&props.fm.frame.text}</h1>
 
-            {match &props.frame.subtext {
+            {match &props.fm.frame.subtext {
                 Some(subtext) => html! {
                     <h2 class="text">{subtext}</h2>
                 },
@@ -95,5 +89,5 @@ pub fn frame(props: &FrameProps) -> Html {
 
 #[derive(Properties, PartialEq)]
 pub struct FrameProps {
-    pub frame: FrameModel,
+    pub fm: FrameModel,
 }

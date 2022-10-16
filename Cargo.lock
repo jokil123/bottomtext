@@ -13,6 +13,7 @@ name = "api"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "common",
  "futures",
  "futures-util",
  "serde",
@@ -120,6 +121,14 @@ checksum = "0f41849eba0194c121ff31ccbfcc0b0fc965a3ea9f5ef23756af72a17938bc57"
 [[package]]
 name = "common"
 version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "futures-util",
+ "gloo-net 0.2.4",
+ "serde",
+ "thiserror",
+ "yew",
+]
 
 [[package]]
 name = "console_error_panic_hook"
@@ -1277,6 +1286,7 @@ name = "ui"
 version = "0.1.0"
 dependencies = [
  "clone_all",
+ "common",
  "futures",
  "gloo 0.8.0",
  "gloo-net 0.2.4",

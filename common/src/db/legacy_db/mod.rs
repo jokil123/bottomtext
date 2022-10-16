@@ -1,5 +1,5 @@
 use super::db_error::DbError;
-use super::types::{FrameJson, FramesJson};
+use crate::frame::{FrameJson, FramesJson};
 
 use std::{fs, io::Write};
 

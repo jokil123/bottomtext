@@ -7,16 +7,13 @@ use std::sync::{
 };
 use std::time::Instant;
 
-use db::legacy_db::{insert_frame, read_frames};
-use db::types::FrameJson;
+use common::db::legacy_db::{insert_frame, read_frames};
+use common::frame::FrameJson;
 use futures_util::{SinkExt, StreamExt, TryFutureExt};
 use tokio::sync::{mpsc, RwLock};
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::ws::{Message, WebSocket};
 use warp::Filter;
-
-// mod cache;
-mod db;
 
 extern crate serde;
 extern crate serde_json;

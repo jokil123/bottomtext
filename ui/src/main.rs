@@ -1,15 +1,15 @@
-use frame::FrameModel;
+use model::FrameModel;
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::html;
 use yew::prelude::*;
 
-mod frame;
 mod frame_input;
+mod model;
 mod util;
 mod ws;
 
-use crate::frame::Frame;
 use crate::frame_input::FrameInput;
+use crate::model::Frame;
 
 #[function_component(App)]
 fn app() -> Html {
@@ -30,7 +30,7 @@ fn app() -> Html {
 
     html! {
         <>
-            <Frame frame={(*frame).clone()} />
+            <Frame fm={(*frame).clone()} />
             <FrameInput />
         </>
     }

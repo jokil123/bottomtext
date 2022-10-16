@@ -6,3 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+serde = { version = "1.0.145", features = ["derive"] }
+futures-util = "0.3.24"
+async-trait = "0.1.57"
+thiserror = "1.0.37"
+gloo-net = "0.2.4"
+yew = "^0.19"
