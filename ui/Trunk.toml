@@ -1,6 +1,3 @@
-# [build]
-# public_url = "/public"
-
 [[proxy]]
 rewrite = "/api/ws"
 backend = "ws://localhost:3030/ws"
