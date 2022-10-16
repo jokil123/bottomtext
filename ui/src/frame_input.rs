@@ -1,10 +1,12 @@
 use clone_all::clone_all;
 use gloo::events::EventListener;
 
-use ui::{get_html_element_by_id, value_from_event};
+// use ui::{get_html_element_by_id, value_from_event};
 use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlInputElement};
 use yew::{function_component, html, use_effect, use_state, KeyboardEvent, UseStateHandle};
+
+use crate::util::{get_html_element_by_id, value_from_event};
 
 #[function_component(FrameInput)]
 pub fn frame_input() -> Html {

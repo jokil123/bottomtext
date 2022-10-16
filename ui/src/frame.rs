@@ -56,7 +56,7 @@ impl FrameModel {
     }
 
     pub async fn from_request() -> FrameModel {
-        let fetched_frames: FramesJson = Request::get("http://localhost:3030/api/frames")
+        let fetched_frames: FramesJson = Request::get("/api/frames")
             .send()
             .await
             .unwrap()

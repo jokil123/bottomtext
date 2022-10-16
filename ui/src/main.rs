@@ -1,9 +1,11 @@
 use frame::FrameModel;
+use wasm_bindgen::prelude::wasm_bindgen;
 use yew::html;
 use yew::prelude::*;
 
 mod frame;
 mod frame_input;
+mod util;
 mod ws;
 
 use crate::frame::Frame;

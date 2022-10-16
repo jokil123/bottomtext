@@ -1,5 +1,8 @@
-[build]
-public_url = "./dist/"
+[[proxy]]
+rewrite = "/api/ws"
+backend = "ws://localhost:3030/ws"
+ws = true
 
-[server]
-no_autoreload = true
+[[proxy]]
+rewrite = "/api/frames"
+backend = "http://localhost:3030/frames"

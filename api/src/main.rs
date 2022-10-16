@@ -107,20 +107,22 @@ async fn main() {
             },
         );
 
-    let index = warp::path::end().and(warp::fs::file("../ui/dist/index.html"));
+    // let index = warp::path::end().and(warp::fs::file("../ui/dist/index.html"));
 
-    let dist = warp::path("dist").and(warp::fs::dir("../ui/dist"));
+    // let dist = warp::path("dist").and(warp::fs::dir("../ui/dist"));
 
-    let static_dir = warp::path("static").and(warp::fs::dir("static"));
+    // let static_dir = warp::path("static").and(warp::fs::dir("static"));
 
     let frames = warp::path("frames")
         .and(warp::get())
         .map(|| warp::reply::json(&read_frames().unwrap()));
 
-    let routes = index
-        .or(warp::path("api").and(frames.or(ws)))
-        .or(dist)
-        .or(static_dir);
+    // let routes = index
+    //     .or(warp::path("api").and(frames.or(ws)))
+    //     .or(dist)
+    //     .or(static_dir);
+
+    let routes = frames.or(ws);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
