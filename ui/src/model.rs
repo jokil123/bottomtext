@@ -1,6 +1,5 @@
 use common::frame::{FrameJson, FramesJson};
 use gloo_net::http::Request;
-use serde::Deserialize;
 use yew::{function_component, html, Properties};
 
 #[derive(Debug, Clone, PartialEq, Properties, Default)]
@@ -58,6 +57,20 @@ impl FrameModel {
             .await
             .unwrap();
         FrameModel::from_json(fetched_frames)
+    }
+
+    pub fn merge(&self, other: FrameModel) -> FrameModel {
+        FrameModel {
+            frame: FrameJson {
+                text: self.frame.text.clone(),
+                subtext: self.frame.subtext.clone(),
+            },
+            depth: self.depth,
+            inner: match &self.inner {
+                Some(i) => Some(Box::new(i.merge(&other.inner.as_ref().unwrap()))),
+                None => None,
+            },
+        }
     }
 }
 
