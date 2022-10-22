@@ -1,18 +1,20 @@
+use clone_all::clone_all;
 use common::frame::FrameJson;
+use common::frame::FramesJson;
 use yew::callback;
 use yew::prelude::*;
 use yew_agent::Bridged;
 
+use crate::components::frame::Frame;
 use crate::components::frame_input::FrameInput;
 use crate::event_bus::EventBus;
-use crate::model::Frame;
 use crate::model::FrameModel;
 
 #[function_component(App)]
 pub fn app() -> Html {
     let frame: UseStateHandle<FrameModel> = use_state(|| FrameModel::default());
     {
-        let frame = frame.clone();
+        clone_all!(frame);
         use_effect(move || {
             let frame = frame.clone();
             wasm_bindgen_futures::spawn_local(async move {
@@ -20,16 +22,17 @@ pub fn app() -> Html {
             });
             || ()
         });
+    }
 
-        use_effect(move || {
-            let a = Callback::from(move |f: FrameJson| {
-                frame.set(*(frame.clone()).merge(f));
-            });
-
-            EventBus::bridge(move |msg: Frame| {
-                frame.set(FrameModel::from_frame(msg));
-            });
-            || ()
+    {
+        clone_all!(frame);
+        use_effect({
+            move || {
+                EventBus::bridge(Callback::from(move |f: FrameJson| {
+                    frame.set((*frame).clone().push_front(f));
+                }));
+                || ()
+            }
         });
     }
 

@@ -1,3 +1,11 @@
+[serve]
+# address = "0.0.0.0"
+port = 8080
+no_autoreload = true
+
+# [watch]
+# ignore = ["../api/db"]
+
 [[proxy]]
 rewrite = "/api/ws"
 backend = "ws://localhost:3030/ws"

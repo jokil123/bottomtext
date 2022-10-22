@@ -2,37 +2,48 @@ use common::frame::{FrameJson, FramesJson};
 use gloo_net::http::Request;
 use yew::{function_component, html, Properties};
 
-#[derive(Debug, Clone, PartialEq, Properties, Default)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct FrameModel {
-    frame: FrameJson,
-    depth: i32,
-    inner: Option<Box<FrameModel>>,
+    pub frame: FrameJson,
+    pub depth: i32,
+    pub inner: Option<Box<FrameModel>>,
 }
 
 impl FrameModel {
-    fn new(frame_data: Vec<(&str, Option<&str>)>, depth: Option<i32>) -> Option<FrameModel> {
-        let depth = match depth {
-            Some(d) => d,
-            None => 0,
-        };
-
-        match frame_data.get(0) {
-            Some(d) => Some(FrameModel {
-                frame: FrameJson {
-                    text: d.0.to_string(),
-                    subtext: d.1.map(str::to_string),
-                },
-                depth: depth,
-                inner: match FrameModel::new(frame_data[1..].to_owned(), Some(depth + 1)) {
-                    Some(f) => Some(Box::new(f)),
-                    None => None,
-                },
-            }),
-            None => None,
-        }
+    pub async fn from_request() -> FrameModel {
+        let fetched_frames: FramesJson = Request::get("/api/frames")
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+        fetched_frames.into()
     }
 
-    fn from_json(frames: FramesJson) -> FrameModel {
+    pub fn push_front(self, new: FrameJson) -> FrameModel {
+        let mut fj: FramesJson = self.into();
+        fj.frames.insert(0, new);
+        fj.into()
+    }
+}
+
+impl Into<FramesJson> for FrameModel {
+    fn into(self) -> FramesJson {
+        let mut frames: Vec<FrameJson> = vec![];
+
+        let mut current = Some(self);
+        while let Some(c) = current {
+            frames.push(c.frame);
+            current = c.inner.map(|f| *f);
+        }
+
+        FramesJson { frames }
+    }
+}
+
+impl From<FramesJson> for FrameModel {
+    fn from(frames: FramesJson) -> Self {
         let mut depth: i32 = frames.frames.len() as i32;
 
         frames.frames.iter().fold(FrameModel::default(), |fm, fj| {
@@ -47,60 +58,4 @@ impl FrameModel {
             }
         })
     }
-
-    pub async fn from_request() -> FrameModel {
-        let fetched_frames: FramesJson = Request::get("/api/frames")
-            .send()
-            .await
-            .unwrap()
-            .json()
-            .await
-            .unwrap();
-        FrameModel::from_json(fetched_frames)
-    }
-
-    pub fn merge(&self, other: FrameModel) -> FrameModel {
-        FrameModel {
-            frame: FrameJson {
-                text: self.frame.text.clone(),
-                subtext: self.frame.subtext.clone(),
-            },
-            depth: self.depth,
-            inner: match &self.inner {
-                Some(i) => Some(Box::new(i.merge(&other.inner.as_ref().unwrap()))),
-                None => None,
-            },
-        }
-    }
-}
-
-#[function_component(Frame)]
-pub fn frame(props: &FrameProps) -> Html {
-    html!(
-        <div class="frameContainer" depth={props.fm.depth.to_string()}>
-            <div class="frameBorder">
-                {match &props.fm.inner {
-                    Some(inner) => html! {
-                        <Frame fm={inner.as_ref().clone()} />
-                    },
-                    None => html! {},
-                }}
-            </div>
-
-
-            <h1 class="text">{&props.fm.frame.text}</h1>
-
-            {match &props.fm.frame.subtext {
-                Some(subtext) => html! {
-                    <h2 class="text">{subtext}</h2>
-                },
-                None => html! {},
-            }}
-        </div>
-    )
-}
-
-#[derive(Properties, PartialEq)]
-pub struct FrameProps {
-    pub fm: FrameModel,
 }
