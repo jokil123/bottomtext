@@ -206,12 +206,10 @@ async fn user_frame(conn_id: usize, msg: Message, conn_manager: &ConnectionManag
         return;
     };
 
-    let new_msg = format!("<User#{}>: {}", conn_id, msg);
-
     // New message from this user, send it to everyone else (except same uid)...
     for (&other_conn_id, conn) in conn_manager.active_connections.read().await.iter() {
         if conn_id != other_conn_id {
-            if let Err(_disconnected) = conn.tx.send(Message::text(new_msg.clone())) {
+            if let Err(_disconnected) = conn.tx.send(Message::text(msg.clone())) {
                 // The tx is disconnected, our `user_disconnected` code
                 // should be happening in another task, nothing more to
                 // do here.

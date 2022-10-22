@@ -9,19 +9,25 @@ use crate::components::frame::Frame;
 use crate::components::frame_input::FrameInput;
 use crate::event_bus::EventBus;
 use crate::model::FrameModel;
+use crate::ws::WebsocketService;
 
 #[function_component(App)]
 pub fn app() -> Html {
+    let wss: WebsocketService = WebsocketService::new();
+
     let frame: UseStateHandle<FrameModel> = use_state(|| FrameModel::default());
     {
         clone_all!(frame);
-        use_effect(move || {
-            let frame = frame.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                frame.set(FrameModel::from_request().await);
-            });
-            || ()
-        });
+        use_effect_with_deps(
+            move |_| {
+                let frame = frame.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    frame.set(FrameModel::from_request().await);
+                });
+                || ()
+            },
+            (),
+        );
     }
 
     {

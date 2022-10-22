@@ -1,7 +1,7 @@
 [serve]
 # address = "0.0.0.0"
 port = 8080
-no_autoreload = true
+# no_autoreload = true
 
 # [watch]
 # ignore = ["../api/db"]

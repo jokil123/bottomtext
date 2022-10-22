@@ -40,14 +40,19 @@ impl WebsocketService {
         spawn_local(async move {
             while let Some(msg) = read.next().await {
                 match msg {
-                    Ok(Message::Text(data)) => {
-                        log::debug!("from websocket: {}", data);
-                    }
-                    Ok(Message::Bytes(b)) => {
-                        let decoded = std::str::from_utf8(&b);
-                        if let Ok(val) = decoded {
-                            log::debug!("from websocket: {}", val);
-                            event_bus.send(Request::EventBusMsg(val));
+                    Ok(m) => {
+                        let frame = match m {
+                            Message::Text(s) => Ok(s),
+                            Message::Bytes(b) => std::str::from_utf8(&b).map(|s| s.to_string()),
+                        }
+                        .map(|s| serde_json::from_str::<FrameJson>(&s));
+
+                        match frame {
+                            Ok(Ok(f)) => {
+                                log::debug!("got event from websocket! {:#?}", f);
+                                event_bus.send(Request::EventBusMsg(f));
+                            }
+                            _ => log::error!("failed to parse frame"),
                         }
                     }
                     Err(e) => {
