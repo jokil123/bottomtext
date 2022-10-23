@@ -14,12 +14,12 @@ use crate::ws::WebsocketService;
 #[function_component(App)]
 pub fn app() -> Html {
     let wss = use_ref(|| WebsocketService::new());
-    let _producer = use_ref(|| {
-        EventBus::bridge(Callback::from(move |f: FrameJson| {
-            log::info!("eventbus callback");
-            frame.set((*frame).clone().push_front(f));
-        }))
-    });
+    // let _producer = use_ref(|| {
+    //     EventBus::bridge(Callback::from(move |f: FrameJson| {
+    //         log::info!("eventbus callback");
+    //         frame.set((*frame).clone().push_front(f));
+    //     }))
+    // });
 
     // let wss: WebsocketService = WebsocketService::new();
 
