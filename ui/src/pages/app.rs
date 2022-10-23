@@ -13,7 +13,15 @@ use crate::ws::WebsocketService;
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let wss: WebsocketService = WebsocketService::new();
+    let wss = use_ref(|| WebsocketService::new());
+    let _producer = use_ref(|| {
+        EventBus::bridge(Callback::from(move |f: FrameJson| {
+            log::info!("eventbus callback");
+            frame.set((*frame).clone().push_front(f));
+        }))
+    });
+
+    // let wss: WebsocketService = WebsocketService::new();
 
     let frame: UseStateHandle<FrameModel> = use_state(|| FrameModel::default());
     {
@@ -32,14 +40,18 @@ pub fn app() -> Html {
 
     {
         clone_all!(frame);
-        use_effect({
-            move || {
-                EventBus::bridge(Callback::from(move |f: FrameJson| {
-                    frame.set((*frame).clone().push_front(f));
-                }));
-                || ()
-            }
-        });
+        use_effect_with_deps(
+            {
+                move |_| {
+                    EventBus::bridge(Callback::from(move |f: FrameJson| {
+                        log::info!("eventbus callback");
+                        frame.set((*frame).clone().push_front(f));
+                    }));
+                    || ()
+                }
+            },
+            (),
+        );
     }
 
     html! {
