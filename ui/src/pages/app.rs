@@ -6,15 +6,21 @@ use yew_agent::Bridged;
 use yew_hooks::{use_effect_once, use_list, use_web_socket, UseListHandle};
 
 use crate::components::frame::Frame;
-use crate::components::frame_input::FrameInput;
+use crate::components::input::Input;
 use crate::util::request_frames;
 
 #[function_component(App)]
 pub fn app() -> Html {
     let frames: UseListHandle<FrameJson> = use_list(vec![]);
-    // let frame: UseStateHandle<FrameModel> = use_state(|| FrameModel::default());
-
     let ws = use_web_socket("ws://localhost:8080/api/ws".to_string());
+
+    let submit_cb = {
+        clone_all!(ws, frames);
+        Callback::from(move |frame: FrameJson| {
+            ws.send(serde_json::to_string(&frame).unwrap());
+            frames.insert(0, frame);
+        })
+    };
 
     {
         clone_all!(frames, ws);
@@ -45,7 +51,7 @@ pub fn app() -> Html {
     html! {
         <>
             <Frame frames={frames.current().clone()} depth={0} />
-            <FrameInput />
+            <Input submit={submit_cb}/>
         </>
     }
 }
