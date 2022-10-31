@@ -21,10 +21,15 @@ impl FrameModel {
         fetched_frames.into()
     }
 
-    pub fn push_front(self, new: FrameJson) -> FrameModel {
-        let mut fj: FramesJson = self.into();
+    pub fn push_front(mut self, new: FrameJson) {
+        // TODO: unnecessary clone
+        let mut fj: FramesJson = self.clone().into();
         fj.frames.insert(0, new);
-        fj.into()
+        let new: FrameModel = fj.into();
+        self = new;
+        // self.inner = new.inner;
+        // self.frame = new.frame;
+        // self.depth = new.depth;
     }
 }
 

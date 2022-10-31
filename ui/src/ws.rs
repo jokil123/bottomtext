@@ -1,7 +1,7 @@
 use common::frame::FrameJson;
 use futures::{channel::mpsc::Sender, SinkExt, StreamExt};
-use reqwasm::websocket::{futures::WebSocket, Message};
 
+use gloo_net::websocket::futures::WebSocket;
 use wasm_bindgen_futures::spawn_local;
 use yew_agent::Dispatched;
 
