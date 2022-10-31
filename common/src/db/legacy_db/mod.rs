@@ -6,10 +6,10 @@ use std::{fs, io::Write};
 pub const DB_PATH: &str = "db";
 pub const FRAME_DELIMITER: &str = "\n";
 pub const SUBTEXT_DELIMITER: &str = ";";
-pub const ILLEGAL_CHARACTERS: &'static [&'static str] = &["\n", "\r", "\0"];
+pub const ILLEGAL_CHARACTERS: &[&str] = &["\n", "\r", "\0"];
 
 pub fn read_frames() -> Result<FramesJson, DbError> {
-    let contents = fs::read_to_string(DB_PATH).map_err(|e| DbError::IoError(e))?;
+    let contents = fs::read_to_string(DB_PATH).map_err(DbError::IoError)?;
 
     let mut lines = contents
         .split(FRAME_DELIMITER)
@@ -43,7 +43,7 @@ pub fn insert_frame(frame: FrameJson) -> Result<(), DbError> {
     let mut file = fs::OpenOptions::new()
         .append(true)
         .open(DB_PATH)
-        .map_err(|e| DbError::IoError(e))?;
+        .map_err(DbError::IoError)?;
 
     let text = format!(
         "{}{}{}{}",
@@ -53,8 +53,7 @@ pub fn insert_frame(frame: FrameJson) -> Result<(), DbError> {
         FRAME_DELIMITER
     );
 
-    file.write_all(text.as_bytes())
-        .map_err(|e| DbError::IoError(e))?;
+    file.write_all(text.as_bytes()).map_err(DbError::IoError)?;
 
     Ok(())
 }

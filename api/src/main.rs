@@ -15,11 +15,6 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::ws::{Message, WebSocket};
 use warp::Filter;
 
-extern crate serde;
-extern crate serde_json;
-#[macro_use]
-extern crate serde_derive;
-
 struct Connection {
     tx: mpsc::UnboundedSender<Message>,
     user: Arc<User>,
@@ -29,6 +24,7 @@ struct Connection {
 type Users = Arc<RwLock<HashMap<IpAddr, Arc<User>>>>;
 
 struct User {
+    // TODO implement cooldown using ip
     ip: IpAddr,
     cooldown_until: Option<Instant>,
 }
@@ -71,7 +67,7 @@ impl ConnectionManager {
             },
         );
 
-        return conn_id;
+        conn_id
     }
 
     async fn close(&self, conn_id: usize) {
@@ -213,7 +209,7 @@ async fn user_frame(conn_id: usize, msg: Message, conn_manager: &ConnectionManag
     // New message from this user, send it to everyone else (except same uid)...
     for (&other_conn_id, conn) in conn_manager.active_connections.read().await.iter() {
         if conn_id != other_conn_id {
-            if let Err(_disconnected) = conn.tx.send(Message::text(msg.clone())) {
+            if let Err(_disconnected) = conn.tx.send(Message::text(msg)) {
                 // The tx is disconnected, our `user_disconnected` code
                 // should be happening in another task, nothing more to
                 // do here.
