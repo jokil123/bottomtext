@@ -99,6 +99,7 @@ async fn main() {
              users,
              addr: Option<SocketAddr>| {
                 ws.on_upgrade(move |socket| {
+                    println!("New connection: {:?}", addr);
                     user_connected(socket, conn_manager, addr.unwrap(), users)
                 })
             },
@@ -194,7 +195,10 @@ async fn write_frame_db(msg: Message) {
 
     match insert_frame(frame) {
         Ok(_) => (),
-        Err(e) => eprintln!("Error writing frame to db: {}", e),
+        Err(e) => eprintln!(
+            "Error writing frame to db, please make sure the file exists: {}",
+            e
+        ),
     };
 }
 
