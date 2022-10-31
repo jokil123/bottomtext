@@ -55,13 +55,15 @@ pub fn value_from_event(e: Event) -> Result<String, ConversionError> {
 }
 
 pub async fn request_frames() -> Vec<FrameJson> {
-    let fetched_frames: FramesJson = Request::get("/api/frames")
+    let mut fetched_frames: FramesJson = Request::get("/api/frames")
         .send()
         .await
         .unwrap()
         .json()
         .await
         .unwrap();
+
+    fetched_frames.frames.reverse();
 
     fetched_frames.frames
 }

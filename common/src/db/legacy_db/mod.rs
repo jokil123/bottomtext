@@ -11,10 +11,12 @@ pub const ILLEGAL_CHARACTERS: &'static [&'static str] = &["\n", "\r", "\0"];
 pub fn read_frames() -> Result<FramesJson, DbError> {
     let contents = fs::read_to_string(DB_PATH).map_err(|e| DbError::IoError(e))?;
 
-    let lines = contents
+    let mut lines = contents
         .split(FRAME_DELIMITER)
         .map(|l| l.to_string())
         .collect::<Vec<String>>();
+
+    lines.pop();
 
     let frames = lines
         .iter()
