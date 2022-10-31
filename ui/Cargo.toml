@@ -18,6 +18,8 @@ log = "0.4.17"
 
 yew = "^0.19"
 yew-agent = "0.1.0"
+yew-hooks = "0.1.56"
+
 gloo-net = "0.2.4"
 gloo = "0.8.0"	
 
