@@ -1,3 +1,5 @@
+use common::frame::{FrameJson, FramesJson};
+use gloo_net::http::Request;
 use thiserror::Error;
 use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlElement, HtmlInputElement};
@@ -50,4 +52,16 @@ pub fn value_from_event(e: Event) -> Result<String, ConversionError> {
     };
 
     Ok(element.value())
+}
+
+pub async fn request_frames() -> Vec<FrameJson> {
+    let fetched_frames: FramesJson = Request::get("/api/frames")
+        .send()
+        .await
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+
+    fetched_frames.frames
 }
