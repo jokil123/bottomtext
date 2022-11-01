@@ -1,15 +1,13 @@
+use anyhow;
 use clone_all::clone_all;
 use common::frame::FrameJson;
 use gloo::events::EventListener;
 
-// use ui::{get_html_element_by_id, value_from_event};
-use wasm_bindgen::JsCast;
-use web_sys::{Event, HtmlInputElement};
+use web_sys::Event;
 use yew::{
     function_component, html, use_effect, use_state, Callback, KeyboardEvent, Properties,
     UseStateHandle,
 };
-use yew_hooks::UseWebSocketHandle;
 
 use crate::util::{get_html_element_by_id, value_from_event};
 
@@ -32,13 +30,16 @@ pub fn frame_input(props: &InputProps) -> Html {
         clone_all!(is_shown, text);
         move || {
             let document = gloo::utils::document();
-            let listener = EventListener::new(&document, "keydown", move |event| {
-                // let event = event.dyn_ref::<web_sys::KeyboardEvent>().unwrap_throw();
-
+            let listener = EventListener::new(&document, "keydown", move |_| {
                 if !*is_shown {
                     is_shown.set(true);
                     text.set("".to_string());
-                    get_html_element_by_id("text").map(|e| e.focus());
+
+                    match get_html_element_by_id("text").map(|el| el.focus()) {
+                        Ok(Ok(_)) => (),
+                        Ok(Err(e)) => log::error!("error focusing on text: {:#?}", e),
+                        Err(e) => log::error!("error getting text element: {:#?}", e),
+                    };
                 }
             });
             || drop(listener)
@@ -50,25 +51,45 @@ pub fn frame_input(props: &InputProps) -> Html {
             <input
                 class={"input"}
                 id={"text"}
-                onchange={clone_all!(text); move |e: Event| {value_from_event(e).map(|e| {text.set(e.to_string()); log::info!("{}", e.to_string());});}}
-                onkeydown={{
+                onchange={
+                    clone_all!(text);
+                    move |e: Event| {
+                        if let Ok(event) = value_from_event(e) {
+                            text.set(event.to_string());
+                        }
+                    }
+                }
+                onkeydown={
                     clone_all!(is_shown);
                     move |e| {
                         if *is_shown && is_enter(&e) {
-                            get_html_element_by_id("subtext").map(|e| e.focus());
+                            if let Err(e) = || -> anyhow::Result<()> {
+                                get_html_element_by_id("text")?.focus().map_err(|_| anyhow::anyhow!("could not focus"))?;
+                                Ok(())
+                            }() {
+                                log::error!("error focusing on text: {:#?}", e);
+                            }
                         }
                     }
-                }}
+                }
                 placeholder={"Text"}
                 value={(*text).clone()}
-                style={if (*is_shown).clone() {"visibility: visible;"} else {"visibility: hidden;"}}
+                style={if *is_shown {"visibility: visible;"} else {"visibility: hidden;"}}
             />
             <input
                 class={"input"}
                 id={"subtext"}
-                onchange={clone_all!(subtext); move |e: Event| {value_from_event(e).map(|e| {subtext.set(e.to_string()); log::info!("{}", e.to_string());});}}
+                onchange={
+                    clone_all!(subtext);
+                    move |e: Event| {
+                        if let Ok(event) = value_from_event(e) {
+                            subtext.set(event.to_string());
+                            // log::info!("{}", e.to_string());
+                        }
+                    }
+                }
 
-                onkeydown={{
+                onkeydown={
                     clone_all!(is_shown, text, subtext);
                     let submit_cb = props.submit.clone();
 
@@ -79,7 +100,7 @@ pub fn frame_input(props: &InputProps) -> Html {
                             reset();
                         }
                     }
-                }}
+                }
 
                 placeholder={"Optional Subtext"}
                 value={(*subtext).clone()}

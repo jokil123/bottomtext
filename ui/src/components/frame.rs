@@ -12,7 +12,7 @@ pub fn frame(props: &FrameProps) -> Html {
         <div class="frameContainer" depth={props.depth.to_string()}>
             <div class="frameBorder">
                 {match props.frames.get(props.depth as usize + 1) {
-                    Some(inner) => html! {
+                    Some(_) => html! {
                         <Frame frames={props.frames.clone()} depth={props.depth + 1} />
                     },
                     None => html! {},

@@ -30,7 +30,7 @@ pub fn app() -> Html {
         use_effect_with_deps(
             move |message| {
                 if let Some(message) = &**message {
-                    if let Ok(f) = serde_json::from_str(&message) {
+                    if let Ok(f) = serde_json::from_str(message) {
                         frames.insert(0, f)
                     }
                 }
