@@ -1280,6 +1280,7 @@ dependencies = [
  "yew",
  "yew-agent",
  "yew-hooks",
+ "yew_set_state_onchange",
 ]
 
 [[package]]
@@ -1602,4 +1603,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "yew_set_state_onchange"
+version = "0.1.0"
+source = "git+https://github.com/jokil123/yew_set_state_onchange#8b0a1d96dd3175c52796fd2f41ae93f614f4f3d9"
+dependencies = [
+ "wasm-bindgen",
+ "web-sys",
+ "yew",
 ]

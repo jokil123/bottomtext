@@ -66,6 +66,14 @@ h2 {
   background: rgb(208, 208, 208);
 }
 
+.submit {
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  margin-top: 15px;
+  padding: 3px 10px;
+}
+
 #text {
   font-size: 300%;
 }

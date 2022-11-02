@@ -7,6 +7,8 @@ edition = "2021"
 
 [dependencies]
 common = { path = "../common" }
+# yew_set_value = {path = "../yew_set_value"}
+yew_set_state_onchange = { git = "https://github.com/jokil123/yew_set_state_onchange" }
 
 wasm-bindgen = "0.2.83"
 wasm-bindgen-futures = "0.4.24"

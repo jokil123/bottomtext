@@ -44,6 +44,7 @@ pub fn htmlelement_from_event(e: Event) -> Result<HtmlElement, ConversionError> 
 
 pub fn value_from_event(e: Event) -> Result<String, ConversionError> {
     let element: HtmlInputElement = match e.target() {
+        // TODO: remove unnecessary cast
         Some(e) => match e.dyn_into() {
             Ok(e) => e,
             Err(_) => return Err(ConversionError::NonHtmlElement),
