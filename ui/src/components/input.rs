@@ -84,6 +84,7 @@ pub fn frame_input(props: &InputProps) -> Html {
                     move |e: Event| {
                         if let Ok(event) = value_from_event(e) {
                             subtext.set(event.to_string());
+                            log::info!("subtext: {}", *subtext);
                             // log::info!("{}", e.to_string());
                         }
                     }
@@ -96,6 +97,7 @@ pub fn frame_input(props: &InputProps) -> Html {
                     move |e| {
                         if *is_shown && is_enter(&e) {
                             let st = Some((*subtext).clone()).filter(|x| !x.is_empty());
+                            log::info!("{:#?}", &st);
                             submit_cb.emit(FrameJson { text: (*text).clone(), subtext: st});
                             reset();
                         }

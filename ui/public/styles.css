@@ -2,6 +2,8 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0;
+  height: 100vh;
+  width: 100vw;
   text-align: center;
   color: white;
   background-color: black;
@@ -9,12 +11,16 @@ body {
 }
 
 .frameContainer {
-  width: 80%;
-  height: 80%;
+  /* width: 80%;
+  height: 80%; */
   margin: auto;
   margin-top: 2.5%;
   margin-bottom: 0%;
 }
+
+/* .root {
+  width: 95%;
+} */
 
 h1,
 h2 {
@@ -31,7 +37,7 @@ h2 {
 }
 
 .frameBorder {
-  border: 1px solid white;
+  /* border: 1px solid rgba(255, 255, 255, 0.611); */
   aspect-ratio: 1.48 / 1;
 }
 

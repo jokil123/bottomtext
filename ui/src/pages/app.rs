@@ -11,8 +11,14 @@ use crate::util::request_frames;
 #[function_component(App)]
 pub fn app() -> Html {
     let frames: UseListHandle<FrameJson> = use_list(vec![]);
+    // TODO investigate if this works
     let ws_url = format!(
-        "wss://{}/api/ws",
+        "{}://{}/api/ws",
+        if window().location().protocol().unwrap() == "https" {
+            "wss"
+        } else {
+            "ws"
+        },
         window().location().host().expect("error getting host")
     );
     let ws = use_web_socket(ws_url);

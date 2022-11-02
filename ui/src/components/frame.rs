@@ -8,9 +8,13 @@ pub fn frame(props: &FrameProps) -> Html {
         None => return html! {},
     };
 
+    let sf = |p: f64| -> f64 { p.powi(props.depth) };
+    let inner_scale = 0.7;
+    let scaling_factor = sf(inner_scale);
+
     html!(
-        <div class="frameContainer" depth={props.depth.to_string()}>
-            <div class="frameBorder">
+        <div class="frameContainer" style={format!("height: {}%; width: {}%", inner_scale*100., inner_scale*100.)} depth={props.depth.to_string()}>
+            <div class="frameBorder" style={format!("border: 1px solid rgba(255, 255, 255, {})", sf(0.85))}>
                 {match props.frames.get(props.depth as usize + 1) {
                     Some(_) => html! {
                         <Frame frames={props.frames.clone()} depth={props.depth + 1} />
@@ -20,11 +24,13 @@ pub fn frame(props: &FrameProps) -> Html {
             </div>
 
 
-            <h1 class="text">{current.text.clone()}</h1>
+            <p class="text" style={format!("font-size: {}vw", 4.0 * scaling_factor)}>{&current.text}</p>
 
-            {match current.subtext.clone() {
+            {match &current.subtext
+                {
                 Some(subtext) => html! {
-                    <h2 class="text">{subtext}</h2>
+                    // <h2 class="text">{subtext}</h2>
+                    <p class="text" style={format!("font-size: {}vw", 1.0 * scaling_factor)}>{subtext}</p>
                 },
                 None => html! {},
             }}
