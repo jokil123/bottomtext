@@ -1,12 +1,12 @@
 use clone_all::clone_all;
 use common::frame::FrameJson;
 
-use web_sys::{Event, FocusEvent};
-use yew::{
-    function_component, html, use_state, Callback, KeyboardEvent, Properties, UseStateHandle,
-};
+use web_sys::FocusEvent;
+use yew::{function_component, html, use_state, Callback, Properties, UseStateHandle};
 
-use yew_set_state_onchange::set_state;
+use yew::events::*;
+
+use crate::util::value_from_input_event;
 
 #[function_component(Input)]
 pub fn frame_input(props: &InputProps) -> Html {
@@ -51,8 +51,9 @@ pub fn frame_input(props: &InputProps) -> Html {
     html! {
         <div class={"inputContainer"}>
             <form onsubmit={onsubmit}>
-                <input class={"input"} id={"text"} type="text" placeholder={"Text"} value={(*text).clone()} onchange={set_state!(text)}/>
-                <input class={"input"} id={"subtext"} type="text" placeholder={"(Optional Subtext)"} value={(*subtext).clone()} onchange={set_state!(subtext)}/>
+                <input class={"input"} id={"text"} type="text" placeholder={"Text"} value={(*text).clone()}
+                oninput={Callback::from(move |e: InputEvent| text.set(value_from_input_event(e).unwrap()))}/>
+                <input class={"input"} id={"subtext"} type="text" placeholder={"(Optional Subtext)"} value={(*subtext).clone()} oninput={Callback::from(move |e: InputEvent| subtext.set(value_from_input_event(e).unwrap()))}/>
                 <input class={"submit"} type="submit" />
             </form>
         </div>

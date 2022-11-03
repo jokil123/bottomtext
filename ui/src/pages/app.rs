@@ -14,7 +14,7 @@ pub fn app() -> Html {
     // TODO investigate if this works
     let ws_url = format!(
         "{}://{}/api/ws",
-        if window().location().protocol().unwrap() == "https" {
+        if window().location().protocol().unwrap() == "https:" {
             "wss"
         } else {
             "ws"

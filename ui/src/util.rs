@@ -2,7 +2,7 @@ use common::frame::{FrameJson, FramesJson};
 use gloo_net::http::Request;
 use thiserror::Error;
 use wasm_bindgen::JsCast;
-use web_sys::{Event, HtmlElement, HtmlInputElement};
+use web_sys::{Event, HtmlElement, HtmlInputElement, InputEvent};
 
 #[derive(Error, Debug)]
 pub enum ConversionError {
@@ -43,6 +43,20 @@ pub fn htmlelement_from_event(e: Event) -> Result<HtmlElement, ConversionError> 
 }
 
 pub fn value_from_event(e: Event) -> Result<String, ConversionError> {
+    let element: HtmlInputElement = match e.target() {
+        // TODO: remove unnecessary cast
+        Some(e) => match e.dyn_into() {
+            Ok(e) => e,
+            Err(_) => return Err(ConversionError::NonHtmlElement),
+        },
+        None => return Err(ConversionError::NoneValue),
+    };
+
+    Ok(element.value())
+}
+
+// TODO: find a way to genericize / generalize this
+pub fn value_from_input_event(e: InputEvent) -> Result<String, ConversionError> {
     let element: HtmlInputElement = match e.target() {
         // TODO: remove unnecessary cast
         Some(e) => match e.dyn_into() {
