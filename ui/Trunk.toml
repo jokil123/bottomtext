@@ -14,3 +14,8 @@ ws = true
 [[proxy]]
 rewrite = "/api/frames"
 backend = "http://localhost:3030/frames"
+
+# [[hooks]]
+# stage = "pre_build"
+# command = "tailwindcss"
+# command_arguments = ["-o","public/tailwind.css"]
