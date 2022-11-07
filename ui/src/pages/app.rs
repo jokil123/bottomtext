@@ -4,8 +4,9 @@ use gloo::utils::window;
 use yew::prelude::*;
 use yew_hooks::{use_effect_once, use_list, use_web_socket, UseListHandle};
 
-use crate::components::frame::Frame;
-use crate::components::input::Input;
+// use crate::components::frame::Frame;
+// use crate::components::input::Input;
+use crate::pages::index::Index;
 use crate::util::request_frames;
 
 #[function_component(App)]
@@ -58,9 +59,6 @@ pub fn app() -> Html {
     };
 
     html! {
-        <>
-            <Frame frames={frames.current().clone()} depth={0} />
-            <Input submit={submit_cb}/>
-        </>
+        <Index />
     }
 }
