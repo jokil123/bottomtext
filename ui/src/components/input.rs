@@ -9,7 +9,7 @@ use yew::events::*;
 use crate::util::value_from_input_event;
 
 #[function_component(Input)]
-pub fn frame_input(props: &InputProps) -> Html {
+pub fn frame_input() -> Html {
     let text: UseStateHandle<String> = use_state(|| "".to_string());
     let subtext: UseStateHandle<String> = use_state(|| "".to_string());
 
@@ -49,18 +49,18 @@ pub fn frame_input(props: &InputProps) -> Html {
     };
 
     html! {
-        <div class={"inputContainer"}>
-            <form onsubmit={onsubmit}>
-                <input class={"input"} id={"text"} type="text" placeholder={"Text"} value={(*text).clone()}
-                oninput={Callback::from(move |e: InputEvent| text.set(value_from_input_event(e).unwrap()))}/>
-                <input class={"input"} id={"subtext"} type="text" placeholder={"(Optional Subtext)"} value={(*subtext).clone()} oninput={Callback::from(move |e: InputEvent| subtext.set(value_from_input_event(e).unwrap()))}/>
-                <input class={"submit"} type="submit" />
-            </form>
-        </div>
+        <form class="flex flex-col items-center font-serif" onsubmit={onsubmit}>
+                <input class="input bg-transparent text-center text-2xl" placeholder="Type Something!" type="text" />
+                <input class="input bg-transparent text-center text-sm" placeholder="(Optional Subtext)" type="text" />
+                <input type="submit" />
+        </form>
+        // <div class={"inputContainer"}>
+        //     <form onsubmit={onsubmit}>
+        //         <input class={"input"} id={"text"} type="text" placeholder={"Text"} value={(*text).clone()}
+        //         oninput={Callback::from(move |e: InputEvent| text.set(value_from_input_event(e).unwrap()))}/>
+        //         <input class={"input"} id={"subtext"} type="text" placeholder={"(Optional Subtext)"} value={(*subtext).clone()} oninput={Callback::from(move |e: InputEvent| subtext.set(value_from_input_event(e).unwrap()))}/>
+        //         <input class={"submit"} type="submit" />
+        //     </form>
+        // </div>
     }
-}
-
-#[derive(Properties, PartialEq)]
-pub struct InputProps {
-    pub submit: Callback<FrameJson>,
 }

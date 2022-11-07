@@ -1,3 +1,4 @@
+use crate::components::input::Input;
 use yew::prelude::*;
 
 #[function_component(Landing)]
@@ -15,11 +16,7 @@ pub fn landing() -> Html {
             //         </div>
             //     </div>
             // </div>
-            <form class="flex flex-col items-center font-serif">
-                <input class="input bg-transparent text-center text-2xl" placeholder="Type Something!" type="text" />
-                <input class="input bg-transparent text-center text-sm" placeholder="(Optional Subtext)" type="text" />
-                <input type="submit" />
-            </form>
+            <Input />
         </div>
         <div class="hidden h-28 bg-white md:block md:h-full md:w-28"></div>
     </div>
