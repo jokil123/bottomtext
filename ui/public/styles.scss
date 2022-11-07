@@ -1,154 +1,32 @@
-body {
-  margin: 0;
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-body::-webkit-scrollbar {
-  display: none;
-}
-
 /* Hide scrollbar for IE, Edge and Firefox */
-body {
+.no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-}
 
-.pageContainer {
-  margin: 0;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-
-  &.page1 {
-    background-color: red;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  &.page2 {
-    background-color: green;
-    justify-content: center;
-  }
-}
-
-.page1 {
-  &.center {
-    height: 100%;
-    width: 60%;
-    // set the aspect ratio to the golden ratio
-    // aspect-ratio: 1.618/1;
-    background-color: green;
-  }
-
-  &.paddingSide {
-    height: 100%;
-    width: 170px;
-    background-color: yellow;
-  }
-}
-
-.page2 {
-  &.content {
-    height: 100%;
-    width: 75%;
-    background-color: blue;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-.row2 {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  grid-template-rows: repeat(3, 1fr);
-  font-size: 40px;
-  width: 550px;
-
-  .statName {
-    font-weight: bold;
-  }
-
-  .statValue {
-    justify-self: end;
-  }
-}
-
-.github {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-@media screen and (max-width: 500px) {
-  .hideSmall {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
     display: none;
   }
 }
 
-.fullWidth {
-  width: 100%;
-}
+.input {
+  border: none;
+  color: white;
 
-.fullHeight {
-  height: 100%;
-}
-
-h1 {
-  font-size: 64px;
-}
-
-p {
-  font-size: 27px;
-}
-
-.guide {
-  height: 100vh;
-  width: 100vw;
-  position: absolute;
-  left: 0;
-  opacity: 0.25;
-
-  &.page1 {
-    top: 0vh;
+  &:focus {
+    outline: none;
   }
 
-  &.page2 {
-    top: 100vh;
+  &::selection {
+    color: rgb(19, 19, 19);
+    background: rgb(208, 208, 208);
   }
 }
 
-#heading1 {
-  margin-top: 115px;
-  margin-bottom: 5px;
+.aspect-golden-w {
+  aspect-ratio: 1.61803398875/1;
 }
 
-#heading2 {
-  margin-top: 22px;
-  margin-bottom: 5px;
-}
-
-.github {
-  img {
-    width: 126px;
-    height: 126px;
-  }
-
-  .supportMe {
-    font-size: 20px;
-  }
-
-  .ghTitle {
-    font-size: 64px;
-  }
-}
-
-#pseudoFooter {
-  margin-top: 50px;
+.aspect-golden-h {
+  aspect-ratio: 1/1.61803398875;
 }

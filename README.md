@@ -24,6 +24,10 @@ WHAT HOW?
 
    `trunk serve ui`
 
+1. start tailwind
+
+`NODE_ENV=production tailwindcss -c ./tailwind.config.js -o ./public/tailwind.css --minify --watch`
+
 ## Configuration
 
 configuration for the ui is located in `ui/Trunk.toml`. The default ip for the ui is `0.0.0.0:8080`.
