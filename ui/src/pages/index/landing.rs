@@ -1,12 +1,22 @@
-use crate::components::input::Input;
+use crate::components::{ad::Ad, frame::Frame, input::Input};
+use crate::context::AppContext;
 use yew::prelude::*;
 
 #[function_component(Landing)]
 pub fn landing() -> Html {
+    let context = use_context::<AppContext>().expect("Failed to get context");
+
     html! {
-    <div class="flex h-screen snap-center flex-col justify-between bg-black md:flex-row">
-        <div class="h-28 bg-white md:h-full md:w-28"></div>
+    <div class="flex h-screen snap-center flex-col justify-between bg-black md:flex-row items-center">
+    // md:w-28 bg-white md:h-full
+        <div class="absolute top-0 left-0 w-96 bg-slate-600">
+            <Ad slot="4973753444"/>
+        </div>
+        // <div class="h-28 md:h-full md:w-28">
+            // <Ad slot="4973753444"/>
+        // </div>
         <div class="flex flex-grow flex-col justify-around p-7">
+            <Frame frames={context.frames} depth=0 />
             // <div class="aspect-golden-w border">
             //     <div class="flex flex-grow flex-col justify-around p-7">
             //         <div class="aspect-golden-w border"></div>
