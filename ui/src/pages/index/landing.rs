@@ -8,13 +8,10 @@ pub fn landing() -> Html {
 
     html! {
     <div class="flex h-screen snap-center flex-col justify-between bg-black md:flex-row items-center">
-    // md:w-28 bg-white md:h-full
-        <div class="absolute top-0 left-0 w-96 bg-slate-600">
-            <Ad slot="4973753444"/>
-        </div>
-        // <div class="h-28 md:h-full md:w-28">
-            // <Ad slot="4973753444"/>
+        // <div class="absolute top-0 left-0 min-w-1/2 bg-slate-600">
+        //     <Ad slot="4973753444"/>
         // </div>
+        <div class="h-28 bg-white md:h-full md:w-28"></div>
         <div class="flex flex-grow flex-col justify-around p-7">
             <Frame frames={context.frames} depth=0 />
             // <div class="aspect-golden-w border">
