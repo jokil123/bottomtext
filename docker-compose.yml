@@ -3,17 +3,26 @@ services:
   api:
     build:
       context: .
-      dockerfile: api.Dockerfile
+      dockerfile: Dockerfile.api
     ports:
       - "3030:3030"
     environment:
-      API_PORT: 3030
-  # ui:
-  #   build: .
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - api
-  #   environment:
-  #     API_PORT: 3030
-  #     UI_PORT: 8080
+      - DB_PATH=/db_data/db
+      # - CARGO_HOME=/cargo_home
+      - CARGO_NET_GIT_FETCH_WITH_CLI=true
+    volumes:
+      - db_data:/db_data
+      # - cargo_home:/cargo_home
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+    # environment:
+    # - CARGO_HOME=/cargo_home
+volumes:
+  # cargo_home:
+  db_data:

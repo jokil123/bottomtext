@@ -1,23 +1,20 @@
 FROM rust:1.65
 
+COPY common common
+
 RUN cargo new --bin api
-WORKDIR ./api
-COPY ./Cargo.toml ./Cargo.toml
+
+WORKDIR /api
+
+COPY api/Cargo.toml Cargo.toml
 RUN cargo build --release
 RUN rm src/*.rs
 
-ADD . ./
+COPY api .
 
 RUN rm ./target/release/deps/api*
 RUN cargo build --release
 
-
-
-# # WORKDIR 
-# COPY . .
-
-# RUN cargo install --path ./api
-
 EXPOSE 3030
 
-CMD cargo run
+CMD cargo run --release

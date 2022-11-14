@@ -1,15 +1,20 @@
 use super::db_error::DbError;
 use crate::frame::{FrameJson, FramesJson};
 
-use std::{fs, io::Write};
+use std::{
+    env,
+    fs::{self, File},
+    io::Write,
+    path::Path,
+};
 
-pub const DB_PATH: &str = "db";
+// pub const DB_PATH: &str = "db";
 pub const FRAME_DELIMITER: &str = "\n";
 pub const SUBTEXT_DELIMITER: &str = ";";
 pub const ILLEGAL_CHARACTERS: &[&str] = &["\n", "\r", "\0"];
 
 pub fn read_frames() -> Result<FramesJson, DbError> {
-    let contents = fs::read_to_string(DB_PATH).map_err(DbError::IoError)?;
+    let contents = fs::read_to_string(get_path()).unwrap_or("".to_string());
 
     let mut lines = contents
         .split(FRAME_DELIMITER)
@@ -42,7 +47,7 @@ pub fn read_frames() -> Result<FramesJson, DbError> {
 pub fn insert_frame(frame: FrameJson) -> Result<(), DbError> {
     let mut file = fs::OpenOptions::new()
         .append(true)
-        .open(DB_PATH)
+        .open(get_path())
         .map_err(DbError::IoError)?;
 
     let text = format!(
@@ -66,4 +71,15 @@ pub fn sanitize_input(input: String) -> String {
     ILLEGAL_CHARACTERS
         .iter()
         .fold(input, |acc, c| acc.replace(c, ""))
+}
+
+pub fn get_path() -> String {
+    let path = env::var("DB_PATH").unwrap_or("db".to_string());
+
+    if !Path::new(&path).exists() {
+        println!("DB file not found, creating new one");
+        File::create(&path).expect("Unable to create file");
+    }
+
+    path
 }

@@ -77,6 +77,8 @@ impl ConnectionManager {
 
 #[tokio::main]
 async fn main() {
+    println!("Starting Server...");
+
     let users = Users::default();
     let users = warp::any().map(move || users.clone());
 
@@ -119,6 +121,8 @@ async fn main() {
     let routes = frames.or(ws);
 
     warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
+
+    println!("Server stopped");
 }
 
 async fn user_connected(
