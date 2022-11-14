@@ -3,7 +3,7 @@ use js_sys::{Array, Reflect};
 use wasm_bindgen::JsValue;
 use yew::prelude::*;
 
-use crate::js_external::push_ad;
+use crate::external_js::push_ad;
 
 #[function_component(Ad)]
 pub fn ad(props: &AdProps) -> Html {
