@@ -1,0 +1,19 @@
+version: "3"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    ports:
+      - "3030:3030"
+    environment:
+      API_PORT: 3030
+  # ui:
+  #   build: .
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - api
+  #   environment:
+  #     API_PORT: 3030
+  #     UI_PORT: 8080
