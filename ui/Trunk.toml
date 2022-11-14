@@ -7,10 +7,10 @@ port = 8080
 # ignore = ["../api/db"]
 
 [[proxy]]
-rewrite = "/api/ws"
+rewrite = "/ws"
 backend = "ws://127.0.0.1:3030/ws"
 ws = true
 
 [[proxy]]
-rewrite = "/api/frames"
+rewrite = "/frames"
 backend = "http://127.0.0.1:3030/frames"
