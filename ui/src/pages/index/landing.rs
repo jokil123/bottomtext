@@ -1,4 +1,4 @@
-use crate::components::{frames::Frames, input::Input};
+use crate::components::{aspect_content::AspectContent, frames::Frames, input::Input};
 use crate::context::AppContext;
 use yew::prelude::*;
 
@@ -13,7 +13,8 @@ pub fn landing() -> Html {
         // </div>
         <div class="bg-white h-28 md:w-28 w-full md:h-full"></div>
         <div class="flex flex-grow flex-col justify-around p-7 md:h-full md:w-auto w-full h-auto">
-            <Frames frames={context.frames.clone()} />
+            // <Frames frames={context.frames.clone()} />
+            <AspectContent ratio={1.61803398875} />
             // <Frame frames={context.frames.clone()} depth=0 />
             // <div class="aspect-golden-w border">
             //     <div class="flex flex-grow flex-col justify-around p-7">

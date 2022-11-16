@@ -6,7 +6,7 @@ use yew::prelude::*;
 pub fn frames(props: &FramesProps) -> Html {
     html! {
         <div class="flex-grow">
-            <div class="max-w-full max-h-full aspect-golden-w">
+            <div class="max-w-full max-h-full">
             </div>
             // flex-grow relative
             // <div class="max-w-full max-h-full aspect-golden-w">
