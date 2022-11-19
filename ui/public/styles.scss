@@ -1,3 +1,8 @@
+$text-color: rgb(232, 230, 227);
+$background-color: rgb(0, 0, 0);
+$placeholder-color: rgb(89, 85, 80);
+$border-color: rgb(41, 44, 46);
+
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
@@ -9,17 +14,26 @@
   }
 }
 
+body {
+  background-color: $background-color;
+  color: $text-color;
+}
+
 .input {
   border: none;
-  color: white;
+  color: $text-color;
 
   &:focus {
     outline: none;
   }
 
-  &::selection {
-    color: rgb(19, 19, 19);
-    background: rgb(208, 208, 208);
+  // &::selection {
+  //   color: rgb(19, 19, 19);
+  //   background: rgb(208, 208, 208);
+  // }
+
+  &::placeholder {
+    color: $placeholder-color;
   }
 }
 
