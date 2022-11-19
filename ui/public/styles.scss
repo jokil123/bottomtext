@@ -30,3 +30,8 @@
 .aspect-golden-h {
   aspect-ratio: 1/1.61803398875;
 }
+
+p:empty::before {
+  content: "";
+  display: inline-block;
+}
