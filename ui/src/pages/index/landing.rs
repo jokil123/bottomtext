@@ -1,4 +1,4 @@
-use crate::components::{aspect_content::AspectContent, frames::Frames, input::Input};
+use crate::components::{aspect_content::AspectContent, frame::Frame, input::Input};
 use crate::context::AppContext;
 use yew::prelude::*;
 
@@ -13,18 +13,7 @@ pub fn landing() -> Html {
         // </div>
         <div class="bg-white h-28 md:w-28 w-full md:h-full"></div>
         <div class="flex flex-grow flex-col justify-around p-7 md:h-full md:w-auto w-full h-auto">
-            // <Frames frames={context.frames.clone()} />
-            <AspectContent ratio={1.61803398875} />
-            // <Frame frames={context.frames.clone()} depth=0 />
-            // <div class="aspect-golden-w border">
-            //     <div class="flex flex-grow flex-col justify-around p-7">
-            //         <div class="aspect-golden-w border"></div>
-            //         <div class="flex flex-col items-center py-2 font-serif">
-            //             <div class="input bg-transparent text-center text-2xl">{"What?"}</div>
-            //             <div class="input bg-transparent text-center text-sm">{"How?"}</div>
-            //         </div>
-            //     </div>
-            // </div>
+            <Frame frames={context.frames.clone()} depth=0/>
             <Input />
         </div>
         <div class="hidden h-28 bg-white md:block md:h-full md:w-28"></div>
