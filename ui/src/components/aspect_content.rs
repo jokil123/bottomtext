@@ -1,6 +1,5 @@
 use crate::external_js::maintain_aspect_ratio;
 use clone_all::clone_all;
-use js_sys::Array;
 use rand::random;
 use yew::prelude::*;
 
@@ -22,8 +21,9 @@ pub fn aspect_content(props: &AspectContentProps) -> Html {
     }
 
     html! {
-        <div id={(*id).to_string()} class="bg-green-800 w-full h-full">
-          <div class="bg-red-800">
+        <div id={(*id).to_string()} class="w-full h-full relative">
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {props.children.clone().unwrap_or_default()}
           </div>
         </div>
     }
@@ -32,4 +32,5 @@ pub fn aspect_content(props: &AspectContentProps) -> Html {
 #[derive(Properties, PartialEq)]
 pub struct AspectContentProps {
     pub ratio: f32,
+    pub children: Option<Children>,
 }
