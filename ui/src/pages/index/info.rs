@@ -17,14 +17,14 @@ pub fn info() -> Html {
 
     html! {
     <section class="flex h-screen snap-center flex-col items-center justify-around bg-black py-5 px-7 font-serif transition-all sm:py-10 sm:px-16 md:px-24 lg:px-44 xl:px-60">
-        <section class="pb-7 text-center">
-            <h1 class="text-3xl">{"What, How?"}</h1>
-            <p class="text-sm">{"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."}</p>
+        <section class="pb-7">
+            <h1 class="text-3xl text-center">{"What, Why?"}</h1>
+            <p class="text-sm text-justify">{"You have probably all seen the iconic memes, so I went ahead and turned it into an interactive “chat” app. All users see messages of all other users, its like a giant chatroom. I had this idea a long time ago and finally decided to build this app for real. Additionally, I was also searching for a new project at the time and wanted to learn more about rust and full stack development. The project seemed like a good idea and an interesting challenge, so I started work. The process was more or less fun aside from some hiccups, partly due to my lack of skill and partly due to poor documentation."}</p>
         </section>
 
-        <section class="hidden text-center sm:block">
-            <h1 class="text-3xl">{"What, How?"}</h1>
-            <p class="text-sm">{"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."}</p>
+        <section class="hidden sm:block">
+            <h1 class="text-3xl text-center">{"What, How?"}</h1>
+            <p class="text-sm text-justify">{"I created the entire app in Rust, a blazingly fast systems programming language. The backend was build using Warp, which is a very simple yet powerful webserver and Tokio as the async runtime. Persisting the data is achieved with a custom database implementation designed perfectly for the apps needs. The frontend is built with Yew, a react like, component-based web framework, utilizing a syntax like react JSX by using rusts macros. Frontend and backend communicate using web sockets. The entire application is packaged as a docker container and hosted on a digital ocean droplet."}</p>
         </section>
 
         <div class="contents w-full items-center justify-around sm:flex">
