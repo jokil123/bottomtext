@@ -3,5 +3,5 @@
 members = [
   "api",
   "ui",
-  "common",
+  "common"
 ]

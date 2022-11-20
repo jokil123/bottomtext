@@ -1,0 +1,51 @@
+$text-color: rgb(232, 230, 227);
+$background-color: rgb(0, 0, 0);
+$placeholder-color: rgb(89, 85, 80);
+// $border-color: rgb(48, 52, 54);
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body {
+  background-color: $background-color;
+  color: $text-color;
+}
+
+.input {
+  border: none;
+  color: $text-color;
+
+  &:focus {
+    outline: none;
+  }
+
+  // &::selection {
+  //   color: rgb(19, 19, 19);
+  //   background: rgb(208, 208, 208);
+  // }
+
+  &::placeholder {
+    color: $placeholder-color;
+  }
+}
+
+.aspect-golden-w {
+  aspect-ratio: 1.61803398875/1;
+}
+
+.aspect-golden-h {
+  aspect-ratio: 1/1.61803398875;
+}
+
+p:empty::before {
+  content: "";
+  display: inline-block;
+}
