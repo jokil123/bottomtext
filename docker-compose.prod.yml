@@ -1,12 +1,13 @@
 version: "3"
 services:
   bottomtext:
-    build: .
+    image: jokil/bottomtext:latest
     ports:
-      - "3030:3030"
+      - "80:3030"
     environment:
       - DB_PATH=/db_data/db
     volumes:
       - db_data:/db_data
+    restart: unless-stopped
 volumes:
   db_data:
