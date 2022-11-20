@@ -19,7 +19,7 @@ pub fn frame(props: &FrameProps) -> Html {
         <AspectContent ratio={1.61803398875}>
             <div
                 class={"w-full h-full border flex flex-col items-center justify-around"}
-                style={format!("padding: {}%; border: 1px solid rgba(200, 200, 200, {})", s * 4., sf(0.85))}
+                style={format!("padding: {}%; border: 1px solid rgba(48, 52, 54, {})", s * 4., sf(0.85))}
             >
                     {
                         match props.depth > props.frames.len() {

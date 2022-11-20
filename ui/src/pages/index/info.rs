@@ -16,7 +16,7 @@ pub fn info() -> Html {
     };
 
     html! {
-    <div class="flex h-screen snap-center flex-col items-center justify-around bg-black py-5 px-7 font-serif transition-all sm:py-10 sm:px-16 md:px-24 lg:px-44 xl:px-60">
+    <section class="flex h-screen snap-center flex-col items-center justify-around bg-black py-5 px-7 font-serif transition-all sm:py-10 sm:px-16 md:px-24 lg:px-44 xl:px-60">
         <section class="pb-7 text-center">
             <h1 class="text-3xl">{"What, How?"}</h1>
             <p class="text-sm">{"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."}</p>
@@ -48,6 +48,6 @@ pub fn info() -> Html {
                 <img class="w-24 py-2 invert" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/900px-Octicons-mark-github.svg.png" />
             </div>
         </div>
-    </div>
+    </section>
     }
 }
