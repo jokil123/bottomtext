@@ -34,3 +34,6 @@ anyhow = "1.0.66"
 clone_all = "0.1.1"
 
 futures = "0.3.24"
+
+rand = "0.8.5"
+getrandom = { version = "0.2.8", features = ["js"] }

@@ -1,4 +1,4 @@
-# Frame Incursion
+# Bottomtext
 
 WHAT HOW?
 
@@ -23,6 +23,10 @@ WHAT HOW?
 1. serve ui
 
    `trunk serve ui`
+
+1. start tailwind
+
+`NODE_ENV=production tailwindcss -c ./tailwind.config.js -o ./public/tailwind.css --minify --watch`
 
 ## Configuration
 

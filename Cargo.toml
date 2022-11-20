@@ -3,7 +3,7 @@
 members = [
   "api",
   "ui",
-  "common",
+  "common"
 ]
 
 [profile.dev]
