@@ -70,7 +70,7 @@ pub fn value_from_input_event(e: InputEvent) -> Result<String, ConversionError> 
 }
 
 pub async fn request_frames() -> Vec<FrameJson> {
-    let mut fetched_frames: FramesJson = Request::get("/api/frames")
+    let mut fetched_frames: FramesJson = Request::get("/frames")
         .send()
         .await
         .unwrap()

@@ -77,6 +77,8 @@ impl ConnectionManager {
 
 #[tokio::main]
 async fn main() {
+    println!("Starting Server...");
+
     let users = Users::default();
     let users = warp::any().map(move || users.clone());
 
@@ -101,24 +103,17 @@ async fn main() {
             },
         );
 
-    // let index = warp::path::end().and(warp::fs::file("../ui/dist/index.html"));
-
-    // let dist = warp::path("dist").and(warp::fs::dir("../ui/dist"));
-
-    // let static_dir = warp::path("static").and(warp::fs::dir("static"));
-
     let frames = warp::path("frames")
         .and(warp::get())
         .map(|| warp::reply::json(&read_frames().unwrap()));
 
-    // let routes = index
-    //     .or(warp::path("api").and(frames.or(ws)))
-    //     .or(dist)
-    //     .or(static_dir);
+    let static_files = warp::fs::dir("../ui/dist");
 
-    let routes = frames.or(ws);
+    let routes = frames.or(ws).or(static_files);
 
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
+
+    println!("Server stopped");
 }
 
 async fn user_connected(

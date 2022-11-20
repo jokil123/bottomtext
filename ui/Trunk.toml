@@ -1,5 +1,5 @@
 [serve]
-# address = "0.0.0.0"
+address = "0.0.0.0"
 port = 8080
 # no_autoreload = true
 
@@ -7,15 +7,10 @@ port = 8080
 # ignore = ["../api/db"]
 
 [[proxy]]
-rewrite = "/api/ws"
-backend = "ws://localhost:3030/ws"
+rewrite = "/ws"
+backend = "ws://127.0.0.1:3030/ws"
 ws = true
 
 [[proxy]]
-rewrite = "/api/frames"
-backend = "http://localhost:3030/frames"
-
-# [[hooks]]
-# stage = "pre_build"
-# command = "tailwindcss"
-# command_arguments = ["-o","public/tailwind.css"]
+rewrite = "/frames"
+backend = "http://127.0.0.1:3030/frames"

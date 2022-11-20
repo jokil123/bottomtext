@@ -13,7 +13,7 @@ pub fn app() -> Html {
     let frames: UseListHandle<FrameJson> = use_list(vec![]);
     // TODO investigate if this works
     let ws_url = format!(
-        "{}://{}/api/ws",
+        "{}://{}/ws",
         if window().location().protocol().unwrap() == "https:" {
             "wss"
         } else {
