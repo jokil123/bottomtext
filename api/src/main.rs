@@ -1,10 +1,12 @@
+use api::get_ip::get_ip;
+use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use warp::Filter;
 
 use api::connection_manager::ConnectionManager;
 use api::users::Users;
-use api::ws::user_connected;
+use api::websocket::user_connected;
 use common::db::legacy_db::read_frames;
 
 #[tokio::main]
@@ -39,11 +41,13 @@ async fn main() {
         .and(warp::get())
         .map(|| warp::reply::json(&read_frames().unwrap()));
 
-    let static_files = warp::fs::dir("../ui/dist");
+    let static_files_path = env::var("STATIC_PATH").unwrap_or("..ui/dist".to_string());
+    let static_files = warp::fs::dir(static_files_path);
 
     let routes = frames.or(ws).or(static_files);
 
-    warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
+    println!("Binding to {}", get_ip());
+    warp::serve(routes).run(get_ip()).await;
 
     println!("Server stopped");
 }

@@ -3,8 +3,9 @@ use std::sync::Arc;
 
 use crate::{
     users::Users,
-    util::{user_frame, write_frame_db},
+    util::{user_frame, write_frame_to_db},
 };
+use common::serialization_data::websocket_message::WebSocketMessage;
 use futures_util::{SinkExt, StreamExt, TryFutureExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
@@ -23,7 +24,7 @@ pub async fn user_connected(
 
     // Use an unbounded channel to handle buffering and flushing of messages
     // to the websocket...
-    let (tx, rx) = mpsc::unbounded_channel();
+    let (tx, rx) = mpsc::unbounded_channel::<WebSocketMessage>();
     let mut rx = UnboundedReceiverStream::new(rx);
 
     tokio::task::spawn(async move {
@@ -53,9 +54,10 @@ pub async fn user_connected(
                 break;
             }
         };
-        println!("{}: {:?}", conn_id, msg);
+
+        println!("connection id {} sent message: {:?}", conn_id, msg);
         user_frame(conn_id, msg.clone(), &connections).await;
-        write_frame_db(msg).await;
+        write_frame_to_db(msg).await;
     }
 
     // user_ws_rx stream will keep processing as long as the user stays

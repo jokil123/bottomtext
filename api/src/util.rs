@@ -3,7 +3,7 @@ use warp::ws::Message;
 
 use crate::connection_manager::ConnectionManager;
 
-pub async fn write_frame_db(msg: Message) {
+pub async fn write_frame_to_db(msg: Message) {
     let s = match msg.to_str() {
         Ok(s) => s,
         Err(_) => {
@@ -11,6 +11,8 @@ pub async fn write_frame_db(msg: Message) {
             return;
         }
     };
+
+    // println!("message: {}", s);
 
     let frame: FrameJson = match serde_json::from_str(s) {
         Ok(f) => f,
@@ -31,6 +33,7 @@ pub async fn write_frame_db(msg: Message) {
 
 pub async fn user_frame(conn_id: usize, msg: Message, conn_manager: &ConnectionManager) {
     // Skip any non-Text messages...
+
     let msg = if let Ok(s) = msg.to_str() {
         s
     } else {

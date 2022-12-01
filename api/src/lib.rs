@@ -1,6 +1,8 @@
 pub mod connection;
 pub mod connection_manager;
+pub mod get_ip;
+pub mod packets;
 pub mod user;
 pub mod users;
 pub mod util;
-pub mod ws;
+pub mod websocket;

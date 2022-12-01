@@ -22,6 +22,7 @@ dependencies = [
  "common",
  "futures",
  "futures-util",
+ "isocountry",
  "serde",
  "serde_derive",
  "serde_json",
@@ -131,6 +132,7 @@ dependencies = [
  "async-trait",
  "futures-util",
  "gloo-net",
+ "isocountry",
  "serde",
  "thiserror",
  "yew",
@@ -636,6 +638,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "isocountry"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1ea1dc4bf0fb4904ba83ffdb98af3d9c325274e92e6e295e4151e86c96363e04"
+dependencies = [
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
