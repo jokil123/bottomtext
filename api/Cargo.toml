@@ -22,3 +22,7 @@ warp = "0.3.2"
 futures-util = "0.3.24"
 
 isocountry = "0.3.2"
+jurisdiction = "0.1.1"
+
+anyhow = "1.0.66"
+sha2 = "0.10.6"

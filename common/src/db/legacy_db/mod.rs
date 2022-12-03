@@ -1,5 +1,6 @@
+use crate::packets::MessageContent;
+
 use super::db_error::DbError;
-use crate::frame::{FrameJson, FramesJson};
 
 use std::{
     env,
@@ -13,7 +14,7 @@ pub const FRAME_DELIMITER: &str = "\n";
 pub const SUBTEXT_DELIMITER: &str = ";";
 pub const ILLEGAL_CHARACTERS: &[&str] = &["\n", "\r", "\0"];
 
-pub fn read_frames() -> Result<FramesJson, DbError> {
+pub fn read_frames() -> Result<Vec<MessageContent>, DbError> {
     let contents = fs::read_to_string(get_path()).unwrap_or("".to_string());
 
     let mut lines = contents
@@ -32,19 +33,19 @@ pub fn read_frames() -> Result<FramesJson, DbError> {
                 .collect::<Vec<String>>();
 
             match splits.get(0) {
-                Some(s) => Ok(FrameJson {
+                Some(s) => Ok(MessageContent {
                     text: s.to_string(),
                     subtext: splits.get(1).map(|s| s.to_owned()),
                 }),
                 None => Err(DbError::ParseError),
             }
         })
-        .collect::<Result<Vec<FrameJson>, DbError>>()?;
+        .collect::<Result<Vec<MessageContent>, DbError>>()?;
 
-    Ok(FramesJson { frames })
+    Ok(frames)
 }
 
-pub fn insert_frame(frame: FrameJson) -> Result<(), DbError> {
+pub fn insert_frame(frame: MessageContent) -> Result<(), DbError> {
     let mut file = fs::OpenOptions::new()
         .append(true)
         .open(get_path())

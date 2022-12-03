@@ -1,9 +1,9 @@
+use common::packets::s2c::PacketS2C;
 use std::collections::HashMap;
 use std::net::IpAddr;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use tokio::sync::{mpsc, RwLock};
-use warp::ws::Message;
 
 use crate::connection::Connection;
 use crate::user::User;
@@ -28,22 +28,23 @@ impl ConnectionManager {
     pub async fn open(
         &self,
         users: Users,
-        tx: mpsc::UnboundedSender<Message>,
+        tx: mpsc::UnboundedSender<PacketS2C>,
         ip: IpAddr,
+        id: u128,
     ) -> usize {
         // Aquire a write lock on the active connections
         let mut users_lock = users.write().await;
 
         // Check if the user is already in the users list, if not add them
-        let user = match users_lock.get(&ip) {
+        let user = match users_lock.get(&id) {
             Some(user) => user,
             None => {
                 let user = User {
                     ip,
-                    cooldown_until: None,
+                    last_message: None,
                 };
-                users_lock.insert(ip, Arc::new(user));
-                users_lock.get(&ip).unwrap()
+                users_lock.insert(id, Arc::new(user));
+                users_lock.get(&id).unwrap()
             }
         };
 
@@ -66,5 +67,21 @@ impl ConnectionManager {
     // Close a connection and remove it from the active connections
     pub async fn close(&self, conn_id: usize) {
         self.active_connections.write().await.remove(&conn_id);
+    }
+
+    pub async fn send_to_all(&self, packet: PacketS2C) {
+        let active_connections = self.active_connections.read().await;
+        for (_, connection) in active_connections.iter() {
+            connection.tx.send(packet.clone());
+        }
+    }
+
+    pub async fn send_to_others(&self, packet: PacketS2C, conn_id: usize) {
+        let active_connections = self.active_connections.read().await;
+        for (id, connection) in active_connections.iter() {
+            if *id != conn_id {
+                connection.tx.send(packet.clone());
+            }
+        }
     }
 }
